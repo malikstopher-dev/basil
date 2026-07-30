@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-bg: #0a0a0a;
+    --color-surface: #121212;
+    --color-surface-hover: #1a1a1a;
+    --color-emerald-accent: #062c21;
+    --color-emerald-light: #0d4d3c;
+    --color-gold-editorial: #b29762;
+    --color-gold-light: #d4c098;
+  }
+
+  body {
+    background-color: #0a0a0a;
+    color: #f3f4f6;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom luxury scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c2621;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b29762;
+}
+
+/* Editorial glass & panel utilities */
+.glass-panel {
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel-gold {
+  background: rgba(10, 10, 10, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(178, 151, 98, 0.3);
+}
+
+/* Text and Metallic Accents */
+.text-gold-editorial {
+  color: #b29762;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f3e5c8 0%, #b29762 50%, #856a38 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-emerald-gradient {
+  background: linear-gradient(135deg, #a7f3d0 0%, #10b981 50%, #062c21 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-glow {
+  box-shadow: 0 0 25px rgba(178, 151, 98, 0.12);
+}
+
+.editorial-border {
+  border: 1px solid rgba(178, 151, 98, 0.25);
+}
+
+/* Font styles */
+.font-serif-display {
+  font-family: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+}
+

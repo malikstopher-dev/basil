@@ -1,0 +1,6 @@
+{
+  "name": "Basil's Billiards Supplier (BSS)",
+  "description": "Sandton's premier luxury billiards venue, fine dining, craft cocktails, and elite lounge inside The Boma Café, Paulshof, Sandton.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
