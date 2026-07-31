@@ -1,6 +1,6 @@
 import React from 'react';
 import { EVENTS, SPORTS_SCHEDULE } from '../data/billiardsData';
-import { Award, Trophy, Calendar, Tv, Users, Flame, ChevronRight, Clock, Sparkles } from 'lucide-react';
+import { Award, Calendar, Tv, ChevronRight, Clock } from 'lucide-react';
 
 interface EventsSectionProps {
   onOpenBooking: () => void;

@@ -96,7 +96,7 @@ export const VipClubSection: React.FC = () => {
                       >
                         <Icon className="w-3.5 h-3.5" />
                         <span className="uppercase text-[10px] tracking-wider">{opt.label}</span>
-                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 ml-1 fill-black text-[#b29762]" />}
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 ml-1 text-[#b29762]" style={{ fill: 'black' }} />}
                       </button>
                     );
                   })}

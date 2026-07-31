@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { BilliardTable, BookingFormData } from '../types';
 import { BILLIARD_TABLES, VENUE_INFO } from '../data/billiardsData';
-import { Calendar, Clock, Users, CheckCircle2, X, MessageSquare, Phone, Sparkles, Award, Utensils } from 'lucide-react';
+import { CheckCircle2, X, MessageSquare, Sparkles } from 'lucide-react';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -61,7 +61,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto duration-200" style={{ animation: 'fadeIn 0.2s ease-out' }}>
       <div className="bg-[#0a0a0a] border border-[#b29762]/40 max-w-2xl w-full p-6 sm:p-8 relative shadow-2xl my-8 space-y-6 text-white">
         {/* Close Button */}
         <button
@@ -280,7 +280,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
         {/* STEP 3 - SUCCESS CONFIRMATION */}
         {step === 3 && (
-          <div className="text-center space-y-6 py-4 animate-in zoom-in-95 duration-300">
+          <div className="text-center space-y-6 py-4 duration-300 max-w-lg mx-auto" style={{ animation: 'zoomIn 0.3s ease-out' }}>
             <div className="w-16 h-16 border border-[#b29762] text-[#b29762] flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8 text-[#b29762]" />
             </div>

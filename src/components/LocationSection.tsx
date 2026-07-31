@@ -1,6 +1,6 @@
 import React from 'react';
 import { VENUE_INFO } from '../data/billiardsData';
-import { MapPin, Phone, Mail, Clock, MessageSquare, Compass, ShieldCheck, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageSquare, ExternalLink } from 'lucide-react';
 
 export const LocationSection: React.FC = () => {
   return (

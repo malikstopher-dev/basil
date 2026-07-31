@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Calendar, Menu, X, MapPin, Clock, Award, ShieldCheck, ChevronRight } from 'lucide-react';
+import { Phone, Calendar, Menu, X, MapPin, Clock, Award, ChevronRight } from 'lucide-react';
 import { VENUE_INFO } from '../data/billiardsData';
 
 interface HeaderProps {
@@ -146,7 +146,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking }) => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-[#0a0f0c] border-b border-emerald-900/60 px-4 pt-4 pb-6 space-y-4 shadow-2xl animate-in slide-in-from-top duration-200">
+          <div className="lg:hidden bg-[#0a0f0c] border-b border-emerald-900/60 px-4 pt-4 pb-6 space-y-4 shadow-2xl" style={{ animation: 'slideDown 0.2s ease-out' }}>
             <div className="grid grid-cols-1 gap-2 pt-2">
               {navLinks.map((link) => (
                 <a

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Target, GlassWater, Tv, Users, Flame, Crown, Sparkles } from 'lucide-react';
+import { Target, GlassWater, Tv, Flame, Crown } from 'lucide-react';
 
 export const WhyChooseUs: React.FC = () => {
   const pillars = [

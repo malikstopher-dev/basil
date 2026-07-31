@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { DRINK_MENU } from '../data/billiardsData';
-import { GlassWater, Sparkles, Award, Wine, Flame, ChevronRight } from 'lucide-react';
-
 export const BarSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'cocktails' | 'whisky' | 'beer' | 'wine'>('all');
 

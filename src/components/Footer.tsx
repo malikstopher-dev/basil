@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { VENUE_INFO } from '../data/billiardsData';
-import { Phone, MapPin, Mail, Award, Clock, ArrowUp, Heart, Sparkles } from 'lucide-react';
+import { Phone, MapPin, Mail, Clock, ArrowUp } from 'lucide-react';
 
 interface FooterProps {
   onOpenBooking: () => void;

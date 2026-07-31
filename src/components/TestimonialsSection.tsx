@@ -1,6 +1,6 @@
 import React from 'react';
 import { TESTIMONIALS } from '../data/billiardsData';
-import { Star, Quote, Award, Sparkles, ShieldCheck } from 'lucide-react';
+import { Star, Quote } from 'lucide-react';
 
 export const TestimonialsSection: React.FC = () => {
   return (
@@ -23,7 +23,7 @@ export const TestimonialsSection: React.FC = () => {
           <div className="flex items-center justify-center space-x-2 text-[#b29762] pt-1">
             <div className="flex space-x-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-[#b29762] text-[#b29762]" />
+                <Star key={i} className="w-4 h-4 text-[#b29762]" style={{ fill: '#b29762' }} />
               ))}
             </div>
             <span className="text-white font-bold text-sm ml-2">4.9 ★ Rating</span>
@@ -43,7 +43,7 @@ export const TestimonialsSection: React.FC = () => {
               <div className="space-y-4 relative z-10">
                 <div className="flex space-x-1 text-[#b29762]">
                   {[...Array(t.rating)].map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-[#b29762] text-[#b29762]" />
+                    <Star key={i} className="w-3.5 h-3.5 text-[#b29762]" style={{ fill: '#b29762' }} />
                   ))}
                 </div>
 

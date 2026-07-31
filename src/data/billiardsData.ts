@@ -41,7 +41,7 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Dedicated Chesterfield Lounge Seating",
       "Perimeter Beverage Rail & Cigar Tray"
     ],
-    imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero3.jpg",
     badge: "Tournament Choice"
   },
   {
@@ -62,7 +62,7 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Complimentary Welcome Single Malt Pour",
       "Plush Chesterfield Lounge Furniture"
     ],
-    imageUrl: "https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/vip.jpg",
     badge: "Exclusive VIP"
   },
   {
@@ -81,7 +81,7 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Adjacent High-Top Leather Dining Table",
       "Direct Bar Service Access"
     ],
-    imageUrl: "https://images.unsplash.com/photo-1615826932727-ed9f182ac67e?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero6.jpg",
     badge: "Most Popular"
   },
   {
@@ -100,7 +100,7 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Surround Lounge Music System",
       "Fireside Seating Nearby"
     ],
-    imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero1.jpg",
     badge: "Al Fresco Vibe"
   }
 ];
@@ -255,7 +255,7 @@ export const EVENTS: TournamentEvent[] = [
     prizePool: "R10,000 Guaranteed Cash + Trophy",
     entryFee: "R150 Entry",
     description: "Sandton's most prestigious weekly pool showdown. Double elimination format, professional referees, 8-Ball rules. Streamed live on venue screens.",
-    imageUrl: "https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=1000",
+    imageUrl: "/images/hero7.jpg",
     isWeekly: true
   },
   {
@@ -265,7 +265,7 @@ export const EVENTS: TournamentEvent[] = [
     date: "Available Mon – Wed",
     time: "Tailored Hours",
     description: "Host your company team building, product launches, or client entertaining. Private venue hire, custom gourmet platters, whisky masterclasses & dedicated host.",
-    imageUrl: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=1000"
+    imageUrl: "/images/hero5.jpg"
   },
   {
     id: "event-ladies-night",
@@ -274,7 +274,7 @@ export const EVENTS: TournamentEvent[] = [
     date: "Every Tuesday Night",
     time: "18:30 – 23:00 SAST",
     description: "Complimentary signature cocktails on arrival for ladies, half-price table rates all evening, and live saxophone lounge sets.",
-    imageUrl: "https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&q=80&w=1000",
+    imageUrl: "/images/vip.jpg",
     isWeekly: true
   }
 ];
@@ -317,42 +317,42 @@ export const GALLERY_IMAGES: GalleryItem[] = [
     id: "gal-1",
     title: "Main Tournament Arena",
     category: "tables",
-    imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero2.jpg",
     caption: "Custom 9ft Slate Tables under shadowless LED canopies at BSS Paulshof."
   },
   {
     id: "gal-2",
     title: "The Boma Executive Lounge",
     category: "lounge",
-    imageUrl: "https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/vip.jpg",
     caption: "Plush emerald velvet Chesterfield sofas and rare whisky display inside The Boma Café."
   },
   {
     id: "gal-3",
     title: "Flame-Grilled Tomahawk Steak",
     category: "food",
-    imageUrl: "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero5.jpg",
     caption: "35-Day dry-aged beef prepared by our executive chefs."
   },
   {
     id: "gal-4",
     title: "Smoked Old Fashioned",
     category: "cocktails",
-    imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero6.jpg",
     caption: "Hickory smoke poured over handcrafted ice spheres."
   },
   {
     id: "gal-5",
     title: "Thursday Tournament Thrills",
     category: "events",
-    imageUrl: "https://images.unsplash.com/photo-1615826932727-ed9f182ac67e?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero7.jpg",
     caption: "King of Pool final frame action with live audience."
   },
   {
     id: "gal-6",
     title: "Outdoor Heated Patio",
     category: "lounge",
-    imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/images/hero1.jpg",
     caption: "Fireside drinks and outdoor pool under fairy lights."
   }
 ];

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FOOD_MENU } from '../data/billiardsData';
 import { MenuItem } from '../types';
-import { Utensils, Flame, Sparkles, ChefHat, Check, Heart } from 'lucide-react';
+import { Flame, Sparkles } from 'lucide-react';
 
 export const FoodSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -78,7 +78,7 @@ export const FoodSection: React.FC = () => {
 
                   {item.isChefSpecial && (
                     <div className="absolute top-4 left-4 px-3 py-1 bg-[#b29762] text-black text-[10px] font-bold uppercase tracking-widest shadow-lg flex items-center space-x-1">
-                      <Flame className="w-3 h-3 fill-black" />
+                      <Flame className="w-3 h-3" style={{ fill: 'black' }} />
                       <span>Chef's Signature</span>
                     </div>
                   )}

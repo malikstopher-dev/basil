@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Utensils, Award, ShieldCheck, MapPin, ChevronDown, Sparkles, Flame, Volume2, VolumeX } from 'lucide-react';
+import { Calendar, Utensils, MapPin } from 'lucide-react';
 import { VENUE_INFO } from '../data/billiardsData';
 
 interface HeroProps {
@@ -9,13 +9,19 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ onOpenBooking }) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 overflow-hidden bg-[#0a0a0a]">
-      {/* Dark Editorial Background with Emerald Radial Overlay */}
+      {/* Dark Editorial Background with Video + Emerald Radial Overlay */}
       <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=2000"
-          alt="Basil's Billiards Supplier Luxury Atmosphere"
-          className="w-full h-full object-cover object-center opacity-30 filter brightness-50 contrast-125 saturate-75"
-        />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/images/poster-lobby.jpg"
+          preload="metadata"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-30 brightness-50 contrast-125 saturate-75"
+        >
+          <source src="/videos/hero-lobby.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#062c21]/50 via-transparent to-[#0a0a0a]" />
       </div>

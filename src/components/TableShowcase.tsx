@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BILLIARD_TABLES } from '../data/billiardsData';
 import { BilliardTable } from '../types';
 import { Table3DVisualization } from './Table3DVisualization';
-import { Calendar, CheckCircle2, ChevronRight, Sparkles, Shield, Info, Layers } from 'lucide-react';
+import { Calendar, CheckCircle2, ChevronRight, Info } from 'lucide-react';
 
 interface TableShowcaseProps {
   onSelectTableForBooking: (tableId: string) => void;
