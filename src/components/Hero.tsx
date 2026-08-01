@@ -209,7 +209,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenBooking }) => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="space-y-3 max-w-4xl"
         >
-          <h1 className="font-serif font-light text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-tight">
+          <h1 className="font-serif font-light text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-tight gold-foil-header">
             Precision Slate. <span className="italic text-[#b29762] font-normal">Unrivaled Luxury.</span>
           </h1>
 
@@ -261,7 +261,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenBooking }) => {
         <button
           onClick={onOpenBooking}
           type="button"
-          className="px-8 py-3.5 bg-[#b29762] text-black font-bold text-[11px] uppercase tracking-widest hover:bg-white transition-all shadow-2xl flex items-center space-x-2"
+          className="px-8 py-3.5 gold-foil-button text-black font-bold text-[11px] uppercase tracking-widest transition-all shadow-2xl flex items-center space-x-2"
         >
           <Calendar className="w-4 h-4 fill-black" />
           <span>Reserve Table</span>

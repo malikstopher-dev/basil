@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, RotateCcw, Volume2, VolumeX, Sparkles, Trophy, Flame, ChevronRight, HelpCircle, Shield, Award, Crown, Palette, Settings2, Sparkle, Share2, Camera, Download, Copy, Check, X, ExternalLink } from 'lucide-react';
+import { Play, RotateCcw, Volume2, VolumeX, Sparkles, Trophy, Flame, ChevronRight, HelpCircle, Shield, Award, Crown, Palette, Settings2, Sparkle, Share2, Camera, Download, Copy, Check, X, ExternalLink, Maximize2, Minimize2, Target, Sliders, Layers, Search, ZoomIn } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { CraftCocktailPairing } from './CraftCocktailPairing';
 
@@ -16,9 +16,24 @@ interface WoodOption {
   id: string;
   name: string;
   fillColor: string;
+  grainColor: string;
   trimColor: string;
   previewColor: string;
   tag: string;
+  description: string;
+}
+
+type DifficultyLevel = 'easy' | 'standard' | 'pro';
+
+interface DifficultyConfig {
+  id: DifficultyLevel;
+  name: string;
+  pocketRadius: number;
+  funnelRadius: number;
+  funnelForce: number;
+  guideLength: number;
+  badge: string;
+  description: string;
 }
 
 const FELT_OPTIONS: FeltOption[] = [
@@ -63,36 +78,107 @@ const WOOD_OPTIONS: WoodOption[] = [
   {
     id: 'mahogany',
     name: 'Royal Mahogany',
-    fillColor: '#1c1510',
+    fillColor: '#2b1710',
+    grainColor: '#472216',
     trimColor: '#b29762',
     previewColor: '#3d261a',
-    tag: 'Polished Timber',
+    tag: 'Polished Imperial Timber',
+    description: 'Deep reddish-brown Cuban mahogany with metallic gold border inlays.',
   },
   {
     id: 'walnut',
     name: 'Dark Walnut',
-    fillColor: '#16110e',
+    fillColor: '#1c1511',
+    grainColor: '#33241b',
     trimColor: '#d4a373',
     previewColor: '#2b2019',
     tag: 'Hand-Rubbed Deep Grain',
+    description: 'American dark walnut featuring heavy figured grain swirls & warm amber bevels.',
   },
   {
     id: 'ebony',
     name: 'Piano Ebony',
-    fillColor: '#0c0d0e',
+    fillColor: '#0a0a0b',
+    grainColor: '#1c1d21',
     trimColor: '#e6c878',
-    previewColor: '#1a1a1e',
-    tag: 'High-Gloss Piano Finish',
+    previewColor: '#141416',
+    tag: 'High-Gloss Obsidian',
+    description: 'Gabon black ebony polished to a mirror-like lacquer finish with gold trim.',
   },
   {
     id: 'rosewood',
     name: 'Brass Rosewood',
-    fillColor: '#281310',
+    fillColor: '#331310',
+    grainColor: '#521d18',
     trimColor: '#f0d486',
     previewColor: '#4a2218',
-    tag: 'Executive Custom',
+    tag: 'Brazilian Heritage Wood',
+    description: 'Rare Brazilian rosewood timber paired with solid polished brass accents.',
+  },
+  {
+    id: 'golden-oak',
+    name: 'Golden Oak',
+    fillColor: '#4a3619',
+    grainColor: '#6b4f24',
+    trimColor: '#f7d380',
+    previewColor: '#5c431d',
+    tag: 'Honey Amber Grain',
+    description: 'Quarter-sawn English white oak with radiant honey golden grain rays.',
+  },
+  {
+    id: 'smoked-ash',
+    name: 'Smoked Charcoal Ash',
+    fillColor: '#181a1b',
+    grainColor: '#2d3034',
+    trimColor: '#c0c0c0',
+    previewColor: '#222528',
+    tag: 'Contemporary Matte',
+    description: 'Thermal-smoked ash hardwood framed by brushed platinum metallic trim.',
+  },
+  {
+    id: 'purpleheart',
+    name: 'Brazilian Purpleheart',
+    fillColor: '#301328',
+    grainColor: '#4d1e40',
+    trimColor: '#ffd700',
+    previewColor: '#3d1833',
+    tag: 'Exotic Amethyst Hardwood',
+    description: 'Exotic South American purpleheart timber accented with 24k gold leaf trim.',
   },
 ];
+
+const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
+  easy: {
+    id: 'easy',
+    name: 'Casual (Magnetic Pockets)',
+    pocketRadius: 32,
+    funnelRadius: 60,
+    funnelForce: 0.45,
+    guideLength: 350,
+    badge: '⭐ Easy (Pocket Assist ON)',
+    description: 'Widened pockets with gravitational magnetic pull & extended aiming trajectory.',
+  },
+  standard: {
+    id: 'standard',
+    name: 'Standard Lounge',
+    pocketRadius: 24,
+    funnelRadius: 30,
+    funnelForce: 0.15,
+    guideLength: 220,
+    badge: 'Standard Rules',
+    description: 'Authentic 9ft pool room table measurements and natural ball physics.',
+  },
+  pro: {
+    id: 'pro',
+    name: 'Tournament Pro',
+    pocketRadius: 18,
+    funnelRadius: 0,
+    funnelForce: 0,
+    guideLength: 160,
+    badge: 'Strict Championship',
+    description: 'Tight pocket mouth clearance requiring precise angle and velocity control.',
+  },
+};
 
 interface Ball {
   id: number;
@@ -133,6 +219,7 @@ interface PocketFlash {
 }
 
 export const Playable3DTable: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Sound state using Web Audio API Synthesizer
@@ -142,6 +229,8 @@ export const Playable3DTable: React.FC = () => {
   // Playable State
   const [activeFeltId, setActiveFeltId] = useState<string>('emerald');
   const [activeWoodId, setActiveWoodId] = useState<string>('mahogany');
+  const [difficulty, setDifficulty] = useState<DifficultyLevel>('easy');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [gameMode, setGameMode] = useState<'8ball' | 'trickshot'>('8ball');
   const [shotCount, setShotCount] = useState(0);
   const [pottedCount, setPottedCount] = useState(0);
@@ -151,11 +240,128 @@ export const Playable3DTable: React.FC = () => {
   const [isBallsMoving, setIsBallsMoving] = useState(false);
   const [isCuePulling, setIsCuePulling] = useState(false);
   const [cueOffset, setCueOffset] = useState(0); // pull-back offset animation
-  const [message, setMessage] = useState<string>('Drag on table or adjust aim to align shot. Strike to break!');
+  const [message, setMessage] = useState<string>('⭐ Casual mode active: Magnetic pockets enable effortless shots! Drag to aim & strike.');
   const [activeTrickShot, setActiveTrickShot] = useState<number>(1);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [snapshotImageDataUrl, setSnapshotImageDataUrl] = useState<string | null>(null);
   const [copySuccessToast, setCopySuccessToast] = useState(false);
+
+  // HD Texture Magnifying Loupe Inspector State
+  const [isLoupeMode, setIsLoupeMode] = useState<boolean>(false);
+  const [loupePos, setLoupePos] = useState<{
+    clientX: number;
+    clientY: number;
+    canvasX: number;
+    canvasY: number;
+  } | null>(null);
+  const [isDraggingLoupe, setIsDraggingLoupe] = useState<boolean>(false);
+  const loupeCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Render magnified sub-image onto loupeCanvas whenever loupePos or table options change
+  useEffect(() => {
+    if (!loupePos || (!isLoupeMode && !isDraggingLoupe)) return;
+    const mainCanvas = canvasRef.current;
+    const loupeCanvas = loupeCanvasRef.current;
+    if (!mainCanvas || !loupeCanvas) return;
+
+    const ctx = loupeCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const loupeSize = 200;
+    const zoomFactor = 3.5;
+    const sourceW = loupeSize / zoomFactor;
+    const sourceH = loupeSize / zoomFactor;
+
+    const sourceX = Math.max(0, Math.min(TABLE_WIDTH - sourceW, loupePos.canvasX - sourceW / 2));
+    const sourceY = Math.max(0, Math.min(TABLE_HEIGHT - sourceH, loupePos.canvasY - sourceH / 2));
+
+    ctx.clearRect(0, 0, loupeSize, loupeSize);
+
+    // Circular clip path for lens
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(100, 100, 98, 0, Math.PI * 2);
+    ctx.clip();
+
+    // Draw magnified image from main canvas
+    ctx.drawImage(mainCanvas, sourceX, sourceY, sourceW, sourceH, 0, 0, loupeSize, loupeSize);
+
+    const isOverFelt =
+      loupePos.canvasX >= 25 &&
+      loupePos.canvasX <= TABLE_WIDTH - 25 &&
+      loupePos.canvasY >= 25 &&
+      loupePos.canvasY <= TABLE_HEIGHT - 25;
+
+    // Overlay Micro-Texture Patterns
+    if (isOverFelt) {
+      // Hainsworth worsted wool micro weave grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+      ctx.lineWidth = 0.8;
+      for (let x = 0; x < loupeSize; x += 5) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, loupeSize);
+        ctx.stroke();
+      }
+      for (let y = 0; y < loupeSize; y += 5) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(loupeSize, y);
+        ctx.stroke();
+      }
+    } else {
+      // Wood rail timber grain striations
+      const currentWood = WOOD_OPTIONS.find((w) => w.id === activeWoodId) || WOOD_OPTIONS[0];
+      ctx.strokeStyle = currentWood.trimColor || '#f0d486';
+      ctx.lineWidth = 1.2;
+      ctx.globalAlpha = 0.25;
+      for (let y = 0; y < loupeSize; y += 6) {
+        ctx.beginPath();
+        ctx.moveTo(0, y + Math.sin(y * 0.15) * 4);
+        ctx.lineTo(loupeSize, y + Math.cos(y * 0.15) * 4);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1.0;
+    }
+
+    // Lens Crosshair Target
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(90, 100);
+    ctx.lineTo(110, 100);
+    ctx.moveTo(100, 90);
+    ctx.lineTo(100, 110);
+    ctx.stroke();
+
+    ctx.restore();
+  }, [loupePos, isLoupeMode, isDraggingLoupe, activeFeltId, activeWoodId]);
+
+  // Full Screen Toggle Handler
+  const toggleFullscreen = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    if (!document.fullscreenElement) {
+      if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+      }
+      setIsFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+      setIsFullscreen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFSChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFSChange);
+    return () => document.removeEventListener('fullscreenchange', handleFSChange);
+  }, []);
 
   // Generate Branded Social Snapshot Canvas Card
   const handleGenerateShareSnapshot = useCallback(() => {
@@ -256,15 +462,18 @@ export const Playable3DTable: React.FC = () => {
   const FRICTION = 0.982;
   const CUSHION_BOUNCE = 0.78;
 
-  // Pockets relative to canvas
-  const pockets: Pocket[] = [
-    { x: 25, y: 25, radius: 22 }, // Top-Left
-    { x: TABLE_WIDTH / 2, y: 18, radius: 20 }, // Top-Center
-    { x: TABLE_WIDTH - 25, y: 25, radius: 22 }, // Top-Right
-    { x: 25, y: TABLE_HEIGHT - 25, radius: 22 }, // Bottom-Left
-    { x: TABLE_WIDTH / 2, y: TABLE_HEIGHT - 18, radius: 20 }, // Bottom-Center
-    { x: TABLE_WIDTH - 25, y: TABLE_HEIGHT - 25, radius: 22 }, // Bottom-Right
-  ];
+  // Dynamic Pockets relative to canvas & active difficulty mode
+  const getActivePockets = useCallback((): Pocket[] => {
+    const radius = DIFFICULTY_CONFIGS[difficulty].pocketRadius;
+    return [
+      { x: 25, y: 25, radius }, // Top-Left
+      { x: TABLE_WIDTH / 2, y: 18, radius: radius * 0.95 }, // Top-Center
+      { x: TABLE_WIDTH - 25, y: 25, radius }, // Top-Right
+      { x: 25, y: TABLE_HEIGHT - 25, radius }, // Bottom-Left
+      { x: TABLE_WIDTH / 2, y: TABLE_HEIGHT - 18, radius: radius * 0.95 }, // Bottom-Center
+      { x: TABLE_WIDTH - 25, y: TABLE_HEIGHT - 25, radius }, // Bottom-Right
+    ];
+  }, [difficulty]);
 
   const ballsRef = useRef<Ball[]>([]);
   const goldParticlesRef = useRef<GoldParticle[]>([]);
@@ -497,12 +706,29 @@ export const Playable3DTable: React.FC = () => {
 
     const updatePhysics = () => {
       const balls = ballsRef.current;
+      const currentPockets = getActivePockets();
+      const diffConfig = DIFFICULTY_CONFIGS[difficulty];
       let moving = false;
 
-      // Update positions & friction
+      // Update positions, friction & magnetic funnel assistance
       for (let i = 0; i < balls.length; i++) {
         const b = balls[i];
         if (b.isPotted) continue;
+
+        // Gravitational magnetic pull towards nearest pocket in Easy/Casual mode
+        if (diffConfig.funnelForce > 0) {
+          for (const p of currentPockets) {
+            const dx = p.x - b.x;
+            const dy = p.y - b.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < diffConfig.funnelRadius && dist > 2) {
+              const pull = diffConfig.funnelForce * (1 - dist / diffConfig.funnelRadius);
+              b.vx += (dx / dist) * pull;
+              b.vy += (dy / dist) * pull;
+            }
+          }
+        }
 
         b.x += b.vx;
         b.y += b.vy;
@@ -544,7 +770,7 @@ export const Playable3DTable: React.FC = () => {
         }
 
         // Pocket check
-        for (const p of pockets) {
+        for (const p of currentPockets) {
           const dx = b.x - p.x;
           const dy = b.y - p.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -647,7 +873,7 @@ export const Playable3DTable: React.FC = () => {
 
     animId = requestAnimationFrame(updatePhysics);
     return () => cancelAnimationFrame(animId);
-  }, [playSound, pockets, isAiming, shotCount, triggerGoldDustCelebration]);
+  }, [playSound, getActivePockets, difficulty, isAiming, shotCount, triggerGoldDustCelebration]);
 
   // Canvas Renderer
   const drawCanvas = () => {
@@ -658,15 +884,55 @@ export const Playable3DTable: React.FC = () => {
 
     const currentFelt = FELT_OPTIONS.find((f) => f.id === activeFeltId) || FELT_OPTIONS[0];
     const currentWood = WOOD_OPTIONS.find((w) => w.id === activeWoodId) || WOOD_OPTIONS[0];
+    const currentPockets = getActivePockets();
 
     // Clear background
     ctx.clearRect(0, 0, TABLE_WIDTH, TABLE_HEIGHT);
 
-    // 1. Table Cushion Rails Frame (Selected Wood Finish)
+    // 1. Table Cushion Rails Frame (Exotic Wood Finish & Procedural Grain Texture)
     ctx.fillStyle = currentWood.fillColor;
     ctx.fillRect(0, 0, TABLE_WIDTH, TABLE_HEIGHT);
 
-    // Rail Gold Trim Line (Selected Wood Trim Highlight)
+    // Render Real-Time Procedural Wood Grain Patterns
+    ctx.save();
+    ctx.strokeStyle = currentWood.grainColor;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.45;
+
+    // Horizontal top/bottom cushion rail grain striations
+    for (let y = 3; y < 30; y += 3) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + Math.sin(y * 0.9) * 1.5);
+      ctx.lineTo(TABLE_WIDTH, y + Math.cos(y * 0.5) * 1.5);
+      ctx.stroke();
+    }
+    for (let y = TABLE_HEIGHT - 30; y < TABLE_HEIGHT; y += 3) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + Math.sin(y * 0.9) * 1.5);
+      ctx.lineTo(TABLE_WIDTH, y + Math.cos(y * 0.5) * 1.5);
+      ctx.stroke();
+    }
+    // Vertical left/right cushion rail grain striations
+    for (let x = 3; x < 30; x += 3) {
+      ctx.beginPath();
+      ctx.moveTo(x + Math.sin(x * 0.9) * 1.5, 0);
+      ctx.lineTo(x + Math.cos(x * 0.5) * 1.5, TABLE_HEIGHT);
+      ctx.stroke();
+    }
+    for (let x = TABLE_WIDTH - 30; x < TABLE_WIDTH; x += 3) {
+      ctx.beginPath();
+      ctx.moveTo(x + Math.sin(x * 0.9) * 1.5, 0);
+      ctx.lineTo(x + Math.cos(x * 0.5) * 1.5, TABLE_HEIGHT);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Rail Bevel Shadow Accent
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(28, 28, TABLE_WIDTH - 56, TABLE_HEIGHT - 56);
+
+    // Rail Gold Trim Line (Selected Wood Metallic Accent)
     ctx.strokeStyle = currentWood.trimColor;
     ctx.lineWidth = 2;
     ctx.strokeRect(10, 10, TABLE_WIDTH - 20, TABLE_HEIGHT - 20);
@@ -710,10 +976,10 @@ export const Playable3DTable: React.FC = () => {
     ctx.arc(180, TABLE_HEIGHT / 2, 50, Math.PI / 2, (Math.PI * 3) / 2);
     ctx.stroke();
 
-    // 3. Brass Pocket Holes
-    for (const p of pockets) {
-      // Outer brass ring
-      ctx.fillStyle = '#b29762';
+    // 3. Brass Pocket Holes (Sized by Active Difficulty Mode)
+    for (const p of currentPockets) {
+      // Outer metallic brass ring
+      ctx.fillStyle = currentWood.trimColor;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius + 3, 0, Math.PI * 2);
       ctx.fill();
@@ -723,6 +989,15 @@ export const Playable3DTable: React.FC = () => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
       ctx.fill();
+
+      // Magnetic funnel halo indicator in Easy mode
+      if (difficulty === 'easy') {
+        ctx.strokeStyle = 'rgba(230, 200, 120, 0.25)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, DIFFICULTY_CONFIGS.easy.funnelRadius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
     }
 
     // 4. Render Balls
@@ -806,15 +1081,15 @@ export const Playable3DTable: React.FC = () => {
     // 7. Aim Guideline & Cue Stick (When Aiming)
     if (isAiming && cueBall && !cueBall.isPotted && !isBallsMoving) {
       const rad = (aimAngle * Math.PI) / 180;
-      const aimLength = 220;
+      const aimLength = DIFFICULTY_CONFIGS[difficulty].guideLength;
 
       const targetX = cueBall.x + Math.cos(rad) * aimLength;
       const targetY = cueBall.y + Math.sin(rad) * aimLength;
 
       // Trajectory Line
       ctx.setLineDash([4, 4]);
-      ctx.strokeStyle = 'rgba(178, 151, 98, 0.85)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = difficulty === 'easy' ? 'rgba(252, 246, 186, 0.95)' : 'rgba(178, 151, 98, 0.85)';
+      ctx.lineWidth = difficulty === 'easy' ? 2 : 1.5;
       ctx.beginPath();
       ctx.moveTo(cueBall.x, cueBall.y);
       ctx.lineTo(targetX, targetY);
@@ -823,7 +1098,7 @@ export const Playable3DTable: React.FC = () => {
 
       // Target Impact Ring Indicator
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(cueBall.x + Math.cos(rad) * 45, cueBall.y + Math.sin(rad) * 45, BALL_RADIUS, 0, Math.PI * 2);
       ctx.stroke();
@@ -893,8 +1168,34 @@ export const Playable3DTable: React.FC = () => {
     }, 180);
   };
 
-  // Mouse Drag to Aim on Canvas
+  // Update Mouse Position for HD Texture Loupe Inspector
+  const updateLoupePosition = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const canvasX = (e.clientX - rect.left) * (TABLE_WIDTH / rect.width);
+    const canvasY = (e.clientY - rect.top) * (TABLE_HEIGHT / rect.height);
+
+    setLoupePos({
+      clientX: e.clientX,
+      clientY: e.clientY,
+      canvasX,
+      canvasY,
+    });
+  };
+
+  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (isLoupeMode || e.shiftKey) {
+      setIsDraggingLoupe(true);
+      updateLoupePosition(e);
+      return;
+    }
+  };
+
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    updateLoupePosition(e);
+
+    if (isLoupeMode || isDraggingLoupe) return;
     if (!isAiming || isBallsMoving) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -913,15 +1214,30 @@ export const Playable3DTable: React.FC = () => {
     setAimAngle(angle);
   };
 
+  const handleCanvasMouseUp = () => {
+    setIsDraggingLoupe(false);
+  };
+
+  const handleCanvasMouseLeave = () => {
+    setIsDraggingLoupe(false);
+    setLoupePos(null);
+  };
+
   return (
-    <section id="playable-table" className="py-20 bg-[#070707] border-t border-[#b29762]/30 relative overflow-hidden">
+    <section
+      ref={containerRef}
+      id="playable-table"
+      className={`py-20 bg-[#070707] border-t border-[#b29762]/30 relative overflow-hidden transition-all ${
+        isFullscreen ? 'fixed inset-0 z-50 overflow-y-auto p-6 sm:p-10 bg-[#070707]' : ''
+      }`}
+    >
       {/* Background Lighting Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#b29762]/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="flex items-center justify-center space-x-3">
             <div className="w-8 h-[1px] bg-[#b29762]" />
             <div className="flex items-center space-x-1.5 text-[10px] uppercase tracking-[0.5em] text-[#b29762] font-bold">
@@ -936,53 +1252,128 @@ export const Playable3DTable: React.FC = () => {
           </h2>
 
           <p className="text-white/60 text-xs sm:text-sm max-w-xl mx-auto">
-            Test your cue ball precision right now. Adjust aim by moving your mouse on the table, dial in shot velocity, and experience true Hainsworth velvet ball physics.
+            Test your cue ball precision right now. Swap exotic timber finishes in real-time, toggle magnetic casual mode, dial in shot velocity, or play in immersive full screen mode.
           </p>
         </div>
 
-        {/* Game Mode Selector & Audio Toggle */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#121212] p-4 border border-white/10">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => {
-                setGameMode('8ball');
-                createRack('8ball');
-              }}
-              className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center space-x-2 border transition-all ${
-                gameMode === '8ball'
-                  ? 'bg-[#b29762] text-black border-[#b29762]'
-                  : 'bg-[#0a0a0a] text-white/60 border-white/10 hover:border-white/30'
-              }`}
-            >
-              <Trophy className="w-3.5 h-3.5" />
-              <span>Standard 8-Ball Rack</span>
-            </button>
+        {/* Game Mode Selector, Difficulty Assistant, and Full Screen Toggle Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-[#121212] p-4 border border-white/10">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Game Mode */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => {
+                  setGameMode('8ball');
+                  createRack('8ball');
+                }}
+                className={`px-3.5 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center space-x-1.5 border transition-all ${
+                  gameMode === '8ball'
+                    ? 'bg-[#b29762] text-black border-[#b29762]'
+                    : 'bg-[#0a0a0a] text-white/60 border-white/10 hover:border-white/30'
+                }`}
+              >
+                <Trophy className="w-3.5 h-3.5" />
+                <span>Standard 8-Ball</span>
+              </button>
 
-            <button
-              onClick={() => {
-                setGameMode('trickshot');
-                createRack('trickshot', activeTrickShot);
-              }}
-              className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center space-x-2 border transition-all ${
-                gameMode === 'trickshot'
-                  ? 'bg-[#b29762] text-black border-[#b29762]'
-                  : 'bg-[#0a0a0a] text-white/60 border-white/10 hover:border-white/30'
-              }`}
-            >
-              <Flame className="w-3.5 h-3.5" />
-              <span>Trick Shot Challenge</span>
-            </button>
+              <button
+                onClick={() => {
+                  setGameMode('trickshot');
+                  createRack('trickshot', activeTrickShot);
+                }}
+                className={`px-3.5 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center space-x-1.5 border transition-all ${
+                  gameMode === 'trickshot'
+                    ? 'bg-[#b29762] text-black border-[#b29762]'
+                    : 'bg-[#0a0a0a] text-white/60 border-white/10 hover:border-white/30'
+                }`}
+              >
+                <Flame className="w-3.5 h-3.5" />
+                <span>Trick Shot</span>
+              </button>
+            </div>
+
+            {/* Difficulty Assistant Modes */}
+            <div className="h-6 w-[1px] bg-white/10 hidden sm:block" />
+
+            <div className="flex items-center space-x-1.5 bg-[#0a0a0a] p-1 border border-white/10">
+              <span className="text-[9px] uppercase tracking-wider text-white/40 font-bold px-2 hidden md:inline">
+                Difficulty:
+              </span>
+              {(['easy', 'standard', 'pro'] as DifficultyLevel[]).map((level) => {
+                const conf = DIFFICULTY_CONFIGS[level];
+                const isActive = difficulty === level;
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => {
+                      setDifficulty(level);
+                      setMessage(`Switched physics mode to: ${conf.name}. ${conf.description}`);
+                    }}
+                    className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider border transition-all ${
+                      isActive
+                        ? 'bg-[#b29762]/20 border-[#b29762] text-[#b29762]'
+                        : 'border-transparent text-white/50 hover:text-white'
+                    }`}
+                    title={conf.description}
+                  >
+                    {level === 'easy' ? '⭐ Easy' : level === 'standard' ? 'Standard' : 'Pro'}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Stat Badges */}
+          {/* Full Screen & Action Controls */}
           <div className="flex items-center space-x-3 text-xs font-mono">
+            {/* HD Texture Loupe Inspector Toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                const nextState = !isLoupeMode;
+                setIsLoupeMode(nextState);
+                setMessage(
+                  nextState
+                    ? '🔍 HD Loupe active: Drag over table surface to magnify velvet nap & timber grain in 3.5x HD!'
+                    : 'Aiming mode restored: Drag to align cue shot & click canvas to strike.'
+                );
+              }}
+              className={`px-3.5 py-2 text-[10px] font-bold font-sans uppercase tracking-wider flex items-center space-x-1.5 border transition-all ${
+                isLoupeMode
+                  ? 'bg-[#b29762] text-black border-[#b29762] shadow-[0_0_15px_rgba(178,151,98,0.5)] font-extrabold'
+                  : 'bg-[#171717] border-[#b29762]/40 text-[#b29762] hover:bg-[#b29762] hover:text-black'
+              }`}
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>{isLoupeMode ? 'Exit Loupe (3.5x)' : 'HD Texture Loupe'}</span>
+            </button>
+
+            {/* Full Screen Mode Toggle */}
+            <button
+              onClick={toggleFullscreen}
+              type="button"
+              className="px-4 py-2 bg-[#b29762] text-black hover:bg-white transition-all text-[10px] font-bold font-sans uppercase tracking-widest flex items-center space-x-2 shadow-lg cursor-pointer"
+            >
+              {isFullscreen ? (
+                <>
+                  <Minimize2 className="w-3.5 h-3.5" />
+                  <span>Exit Full Screen</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span>Play Full Screen</span>
+                </>
+              )}
+            </button>
+
             <button
               onClick={handleGenerateShareSnapshot}
               type="button"
-              className="px-3.5 py-1.5 bg-[#b29762] text-black hover:bg-white transition-colors text-[10px] font-bold font-sans uppercase tracking-wider flex items-center space-x-1.5 shadow-md"
+              className="px-3.5 py-2 bg-[#171717] border border-[#b29762]/40 text-[#b29762] hover:bg-[#b29762] hover:text-black transition-colors text-[10px] font-bold font-sans uppercase tracking-wider hidden md:flex items-center space-x-1.5 shadow-md"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>Share Your Game</span>
+              <span>Share</span>
             </button>
 
             <div className="bg-[#0a0a0a] px-3 py-1.5 border border-white/10 flex items-center space-x-2">
@@ -1015,16 +1406,24 @@ export const Playable3DTable: React.FC = () => {
                 ref={canvasRef}
                 width={TABLE_WIDTH}
                 height={TABLE_HEIGHT}
+                onMouseDown={handleCanvasMouseDown}
                 onMouseMove={handleCanvasMouseMove}
-                onClick={handleShoot}
-                className="w-full h-auto cursor-crosshair block rounded-xs"
+                onMouseUp={handleCanvasMouseUp}
+                onMouseLeave={handleCanvasMouseLeave}
+                onClick={(e) => {
+                  if (isLoupeMode) return;
+                  handleShoot();
+                }}
+                className={`w-full h-auto block rounded-xs ${
+                  isLoupeMode ? 'cursor-zoom-in' : 'cursor-crosshair'
+                }`}
               />
 
               {/* Status Message Overlay */}
               <div className="absolute bottom-4 left-4 right-4 bg-[#0a0a0a]/90 backdrop-blur-md px-4 py-2 border border-white/10 text-[11px] font-mono text-[#b29762] flex items-center justify-between">
                 <span className="truncate">{message}</span>
                 <span className="text-[9px] uppercase tracking-wider text-white/40 font-sans">
-                  Click Canvas to Shoot
+                  {isLoupeMode ? 'Drag Loupe on Table' : 'Click Canvas to Shoot'}
                 </span>
               </div>
             </div>
@@ -1401,6 +1800,65 @@ export const Playable3DTable: React.FC = () => {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating 3.5x HD Magnifying Glass Loupe Lens */}
+      <AnimatePresence>
+        {(isLoupeMode || isDraggingLoupe) && loupePos && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            style={{
+              position: 'fixed',
+              left: loupePos.clientX - 100,
+              top: loupePos.clientY - 100,
+              pointerEvents: 'none',
+              zIndex: 9999,
+            }}
+            className="flex flex-col items-center"
+          >
+            {/* Gold-Rimmed Lens Frame */}
+            <div className="relative w-[200px] h-[200px] rounded-full border-4 border-[#b29762] shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden bg-black/90 ring-2 ring-[#fcf6ba]/70">
+              <canvas ref={loupeCanvasRef} width={200} height={200} className="w-full h-full block" />
+              {/* Glass Glare Highlight Arc */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/25 via-transparent to-black/30 pointer-events-none" />
+              {/* Center Target Reticle Dot */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#b29762] rounded-full shadow-[0_0_8px_#b29762]" />
+              {/* Magnification Badge */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 bg-black/85 backdrop-blur-md border border-[#b29762]/70 text-[#b29762] text-[8px] font-mono font-bold uppercase tracking-widest rounded-full shadow-lg">
+                3.5x HD MAGNIFICATION
+              </div>
+            </div>
+
+            {/* Surface Metric Callout Tag */}
+            <div className="mt-2 bg-[#080808]/95 backdrop-blur-md border border-[#b29762] px-3.5 py-1.5 shadow-2xl text-center space-y-0.5 min-w-[200px] rounded-xs">
+              <div className="text-[9px] font-mono uppercase font-bold text-[#b29762] flex items-center justify-center space-x-1">
+                <Search className="w-3 h-3 text-[#b29762]" />
+                <span>
+                  {loupePos.canvasX >= 25 &&
+                  loupePos.canvasX <= TABLE_WIDTH - 25 &&
+                  loupePos.canvasY >= 25 &&
+                  loupePos.canvasY <= TABLE_HEIGHT - 25
+                    ? 'Hainsworth® Velvet Nap'
+                    : 'Exotic Hardwood Grain'}
+                </span>
+              </div>
+              <div className="text-[10px] text-white font-semibold">
+                {loupePos.canvasX >= 25 &&
+                loupePos.canvasX <= TABLE_WIDTH - 25 &&
+                loupePos.canvasY >= 25 &&
+                loupePos.canvasY <= TABLE_HEIGHT - 25
+                  ? `${FELT_OPTIONS.find((f) => f.id === activeFeltId)?.name} (300g/m²)`
+                  : `${WOOD_OPTIONS.find((w) => w.id === activeWoodId)?.name}`}
+              </div>
+              <div className="text-[8px] text-white/50 uppercase tracking-widest font-mono">
+                Micro-Calibrated Finish
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>

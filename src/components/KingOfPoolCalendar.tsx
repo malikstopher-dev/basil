@@ -310,7 +310,7 @@ export const KingOfPoolCalendar: React.FC<{ onOpenBooking?: () => void }> = () =
               <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#b29762] block">
                 Official Thursday Night Championship
               </span>
-              <h3 className="font-serif italic text-2xl sm:text-4xl text-white font-normal">
+              <h3 className="font-serif italic text-2xl sm:text-4xl text-white font-normal gold-foil-header">
                 King of Pool <span className="not-italic text-[#b29762] font-semibold">Event Calendar & Brackets</span>
               </h3>
             </div>
@@ -324,7 +324,7 @@ export const KingOfPoolCalendar: React.FC<{ onOpenBooking?: () => void }> = () =
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => handleOpenRsvp('spectator')}
-            className="px-4 py-3 bg-[#181818] border border-white/20 text-white hover:border-[#b29762] hover:text-[#b29762] text-[11px] font-bold uppercase tracking-widest transition-all flex items-center space-x-2"
+            className="px-4 py-3 gold-foil-outline-button text-[11px] font-bold uppercase tracking-widest transition-all flex items-center space-x-2"
           >
             <Users className="w-4 h-4 text-[#b29762]" />
             <span>Spectator VIP Pass</span>
@@ -332,7 +332,7 @@ export const KingOfPoolCalendar: React.FC<{ onOpenBooking?: () => void }> = () =
 
           <button
             onClick={() => handleOpenRsvp('player')}
-            className="px-6 py-3 bg-[#b29762] text-black hover:bg-white font-bold text-[11px] uppercase tracking-widest transition-all shadow-lg flex items-center space-x-2"
+            className="px-6 py-3 gold-foil-button text-black font-bold text-[11px] uppercase tracking-widest transition-all shadow-lg flex items-center space-x-2"
           >
             <Trophy className="w-4 h-4" />
             <span>RSVP As Player (R150)</span>

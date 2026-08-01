@@ -3,7 +3,7 @@ import { BILLIARD_TABLES } from '../data/billiardsData';
 import { BilliardTable } from '../types';
 import { Playable3DTable } from './Playable3DTable';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, CheckCircle2, ChevronRight, Sparkles, Shield, Info, Layers, Wrench, Droplets, Wind, CircleDot, ShieldCheck, Thermometer, Award, Gauge, BarChart3, Activity, Compass, Sliders, X, Check, ExternalLink } from 'lucide-react';
+import { Calendar, CheckCircle2, ChevronRight, Sparkles, Shield, Info, Layers, Wrench, Droplets, Wind, CircleDot, ShieldCheck, Thermometer, Award, Gauge, BarChart3, Activity, Compass, Sliders, X, Check, ExternalLink, Search, ZoomIn } from 'lucide-react';
 
 interface TableShowcaseProps {
   onSelectTableForBooking: (tableId: string) => void;
@@ -72,6 +72,16 @@ export const TableShowcase: React.FC<TableShowcaseProps> = ({ onSelectTableForBo
   const [selectedTableModal, setSelectedTableModal] = useState<BilliardTable | null>(null);
   const [selectedStatsTableModal, setSelectedStatsTableModal] = useState<BilliardTable | null>(null);
 
+  // Card Image HD Loupe Inspector state
+  const [magnifyingTableId, setMagnifyingTableId] = useState<string | null>(null);
+  const [cardLoupePos, setCardLoupePos] = useState<{
+    tableId: string;
+    mouseX: number;
+    mouseY: number;
+    pctX: number;
+    pctY: number;
+  } | null>(null);
+
   const filteredTables = activeTab === 'all'
     ? BILLIARD_TABLES
     : BILLIARD_TABLES.filter(t => t.category === activeTab);
@@ -89,7 +99,7 @@ export const TableShowcase: React.FC<TableShowcaseProps> = ({ onSelectTableForBo
               </span>
             </div>
 
-            <h2 className="font-serif font-light text-3xl sm:text-5xl text-white tracking-tight">
+            <h2 className="font-serif font-light text-3xl sm:text-5xl text-white tracking-tight gold-foil-header">
               Premium Billiards <span className="italic text-[#b29762]">Tables</span>
             </h2>
 
@@ -134,14 +144,35 @@ export const TableShowcase: React.FC<TableShowcaseProps> = ({ onSelectTableForBo
               className="group bg-[#121212] border border-white/10 hover:border-[#b29762]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-xl"
             >
               <div>
-                {/* Image Container with Badge */}
-                <div className="relative h-64 sm:h-72 overflow-hidden">
+                {/* Image Container with Badge and HD Magnifying Loupe */}
+                <div
+                  className="relative h-64 sm:h-72 overflow-hidden cursor-crosshair group/img"
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const pctX = (x / rect.width) * 100;
+                    const pctY = (y / rect.height) * 100;
+                    setCardLoupePos({
+                      tableId: table.id,
+                      mouseX: x,
+                      mouseY: y,
+                      pctX,
+                      pctY,
+                    });
+                  }}
+                  onMouseEnter={() => setMagnifyingTableId(table.id)}
+                  onMouseLeave={() => {
+                    setMagnifyingTableId(null);
+                    setCardLoupePos(null);
+                  }}
+                >
                   <img
                     src={table.imageUrl}
                     alt={table.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
+                    className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-700 opacity-90"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/40" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/40 pointer-events-none" />
 
                   {table.badge && (
                     <div className="absolute top-4 left-4 px-3 py-1 bg-[#b29762] text-black text-[10px] font-bold uppercase tracking-widest shadow-lg">
@@ -153,11 +184,64 @@ export const TableShowcase: React.FC<TableShowcaseProps> = ({ onSelectTableForBo
                     {table.hourlyRate}
                   </div>
 
-                  <div className="absolute bottom-4 left-4 right-4">
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-none">
                     <h3 className="font-serif italic text-2xl font-normal text-white drop-shadow-md">
                       {table.name}
                     </h3>
+                    <div className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-[#b29762]/70 text-[#b29762] text-[9px] font-mono font-bold uppercase tracking-widest flex items-center space-x-1 shadow-md">
+                      <Search className="w-3 h-3 text-[#b29762]" />
+                      <span>Hover for 3.5x Loupe</span>
+                    </div>
                   </div>
+
+                  {/* 3.5x HD Magnifying Glass Loupe Lens */}
+                  <AnimatePresence>
+                    {magnifyingTableId === table.id && cardLoupePos && cardLoupePos.tableId === table.id && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 22, stiffness: 350 }}
+                        style={{
+                          position: 'absolute',
+                          left: cardLoupePos.mouseX,
+                          top: cardLoupePos.mouseY,
+                          transform: 'translate(-50%, -50%)',
+                          pointerEvents: 'none',
+                          zIndex: 30,
+                        }}
+                        className="w-44 h-44 rounded-full border-4 border-[#b29762] shadow-[0_15px_35px_rgba(0,0,0,0.9)] overflow-hidden bg-black/90 ring-2 ring-[#fcf6ba]/70 flex flex-col items-center justify-center relative"
+                      >
+                        {/* Zoomed Sub-Image */}
+                        <div
+                          className="absolute inset-0 w-full h-full rounded-full"
+                          style={{
+                            backgroundImage: `url(${table.imageUrl})`,
+                            backgroundPosition: `${cardLoupePos.pctX}% ${cardLoupePos.pctY}%`,
+                            backgroundSize: '350% 350%',
+                          }}
+                        />
+
+                        {/* Micro Worsted Weave Grid Texture */}
+                        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:6px_6px] pointer-events-none" />
+
+                        {/* Glass Glare Highlight */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/30 via-transparent to-black/40 pointer-events-none" />
+
+                        {/* Reticle Target Crosshairs */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="w-4 h-[1px] bg-white/50" />
+                          <div className="h-4 w-[1px] bg-white/50 absolute" />
+                          <div className="w-1.5 h-1.5 bg-[#b29762] rounded-full shadow-[0_0_8px_#b29762]" />
+                        </div>
+
+                        {/* Loupe Badge */}
+                        <div className="absolute bottom-1.5 px-2 py-0.5 bg-black/90 border border-[#b29762]/70 text-[#b29762] text-[8px] font-mono font-bold uppercase tracking-widest rounded-full shadow-md z-10">
+                          3.5x VELVET & WOOD
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Card Body & Specs */}

@@ -132,7 +132,7 @@ export const VipClubSection: React.FC = () => {
             <div className="w-8 h-[1px] bg-[#b29762]" />
           </div>
 
-          <h2 className="font-serif font-light text-3xl sm:text-5xl text-white tracking-tight">
+          <h2 className="font-serif font-light text-3xl sm:text-5xl text-white tracking-tight gold-foil-header">
             BSS <span className="italic text-[#b29762]">Member Tiers</span> & Privileges
           </h2>
 

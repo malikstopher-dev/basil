@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DRINK_MENU } from '../data/billiardsData';
 import { GlassWater, Sparkles, Award, Wine, Flame, ChevronRight } from 'lucide-react';
 import { Card3DTilt } from './Card3DTilt';
+import { CraftCocktailPairing } from './CraftCocktailPairing';
 
 export const BarSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'cocktails' | 'whisky' | 'beer' | 'wine'>('all');
@@ -11,24 +12,27 @@ export const BarSection: React.FC = () => {
     : DRINK_MENU.filter((d) => d.category === activeTab);
 
   return (
-    <section id="bar" className="py-24 bg-[#0a0a0a] relative overflow-hidden border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
+    <section id="bar" className="bg-[#0a0a0a] relative overflow-hidden border-t border-white/10">
+      {/* Featured Craft Cocktail Table Pairing Experience */}
+      <CraftCocktailPairing />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 border-t border-white/10">
+        {/* Sub Header for Full Beverage List */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-14">
           <div className="flex items-center justify-center space-x-3">
             <div className="w-8 h-[1px] bg-[#b29762]"></div>
             <span className="text-[10px] uppercase tracking-[0.5em] text-[#b29762] font-bold">
-              High-End Mixology & Spirits
+              Full Spirits & Wine Cellar
             </span>
             <div className="w-8 h-[1px] bg-[#b29762]"></div>
           </div>
 
-          <h2 className="font-serif font-light text-3xl sm:text-5xl text-white tracking-tight">
-            The Cocktail & <span className="italic text-[#b29762]">Whisky Lounge</span>
+          <h2 className="font-serif font-light text-3xl sm:text-4xl text-white tracking-tight gold-foil-header">
+            The Complete <span className="italic text-[#b29762]">Lounge Cellar Menu</span>
           </h2>
 
-          <p className="text-white/60 text-sm sm:text-base leading-relaxed">
-            From hand-carved ice sphere old fashioneds to 18-year Speyside single malts and South African craft drafts on tap. Our master mixologists elevate every sip.
+          <p className="text-white/60 text-xs sm:text-sm leading-relaxed">
+            Explore our curated list of 18-year Speyside single malts, artisanal South African wines, and craft drafts on tap.
           </p>
         </div>
 

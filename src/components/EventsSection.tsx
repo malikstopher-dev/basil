@@ -22,7 +22,7 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onOpenBooking }) =
             <div className="w-8 h-[1px] bg-[#b29762]"></div>
           </div>
 
-          <h2 className="font-serif font-light text-3xl sm:text-5xl text-white tracking-tight">
+          <h2 className="font-serif font-light text-3xl sm:text-5xl text-white tracking-tight gold-foil-header">
             Events & <span className="italic text-[#b29762]">Live Sports</span>
           </h2>
 

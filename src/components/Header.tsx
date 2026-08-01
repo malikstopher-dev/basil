@@ -147,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking }) => {
               rel="noopener noreferrer"
               whileHover={{ translateZ: 10, rotateY: -8, scale: 1.04 }}
               transition={{ type: 'spring', stiffness: 350 }}
-              className="px-4 py-2.5 border border-white/20 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all [transform-style:preserve-3d]"
+              className="px-4 py-2.5 gold-foil-outline-button text-[11px] font-bold uppercase tracking-widest transition-all [transform-style:preserve-3d]"
             >
               <span>WhatsApp</span>
             </motion.a>
@@ -156,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking }) => {
               onClick={onOpenBooking}
               whileHover={{ translateZ: 15, rotateY: 8, scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 350 }}
-              className="px-6 py-2.5 bg-[#b29762] text-black text-[11px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-md [transform-style:preserve-3d]"
+              className="px-6 py-2.5 gold-foil-button text-black text-[11px] font-bold uppercase tracking-widest transition-all shadow-md [transform-style:preserve-3d]"
             >
               Book Table
             </motion.button>

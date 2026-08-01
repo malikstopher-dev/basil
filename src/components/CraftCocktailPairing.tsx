@@ -1,27 +1,33 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GlassWater, Sparkles, Trophy, Award, Wine, Flame, ChevronRight, Check, Heart, ShieldCheck, Bookmark, RefreshCw, Volume2 } from 'lucide-react';
+import { GlassWater, Sparkles, Trophy, Wine, Flame, ChevronRight, Check, Heart, ShieldCheck, RefreshCw, Volume2, Eye, Filter, Sparkle, Award } from 'lucide-react';
 
 export type SkillLevelKey = 'auto' | 'novice' | 'regular' | 'master' | 'highroller';
 
 interface CraftCocktailPairingProps {
-  activeWoodId: string;
-  activeFeltId: string;
-  shotCount: number;
-  pottedCount: number;
+  activeWoodId?: string;
+  activeFeltId?: string;
+  shotCount?: number;
+  pottedCount?: number;
   onOrderPairing?: (drinkName: string) => void;
 }
 
-interface CocktailPairing {
+export interface CocktailPairing {
   id: string;
   name: string;
   subTitle: string;
-  category: string;
+  category: 'Craft Highball' | 'Smoked Classic' | 'Heritage Reserve' | 'VIP Single Malt' | 'Botanical Spritz' | 'Modern Digestif';
   glassware: string;
   price: string;
   abv: string;
+  woodMatch: 'mahogany' | 'walnut' | 'ebony' | 'rosewood' | 'all';
+  skillMatch: SkillLevelKey;
   description: string;
-  ingredients: string[];
+  ingredients: {
+    name: string;
+    portion: string;
+    notes: string;
+  }[];
   tastingNotes: string[];
   mixologistCommentary: string;
   profiles: {
@@ -33,10 +39,9 @@ interface CocktailPairing {
   imageUrl: string;
 }
 
-// Custom Pairing Matrix matching Wood Finish & Skill Level
-const PAIRING_DATABASE: Record<string, CocktailPairing> = {
-  // Mahogany Pairings
-  'mahogany-novice': {
+// Signature Craft Cocktail Catalog
+export const CRAFT_COCKTAILS: CocktailPairing[] = [
+  {
     id: 'mah-nov',
     name: 'The Sandton Golden Cue Highball',
     subTitle: 'Refreshed Precision Pour',
@@ -44,29 +49,43 @@ const PAIRING_DATABASE: Record<string, CocktailPairing> = {
     glassware: 'Hand-Cut Crystal Highball',
     price: 'R125',
     abv: '14% ABV',
+    woodMatch: 'mahogany',
+    skillMatch: 'novice',
     description: 'Bain’s 15-Year Cape Mountain Whisky, Fever-Tree Elderflower Tonic, dehydrated South African lime wheel, edible 24k gold leaf.',
-    ingredients: ["Bain's 15yr Whisky", 'Elderflower Tonic', 'Dehydrated Lime', '24k Gold Flakes'],
+    ingredients: [
+      { name: "Bain's 15yr Cape Grain Whisky", portion: '50ml', notes: 'Single barrel South African cask' },
+      { name: 'Fever-Tree Elderflower Tonic', portion: '120ml', notes: 'Artisanal spring water effervescence' },
+      { name: 'Dehydrated Sandton Lime', portion: '1 Wheel', notes: 'Sun-cured citrus intensity' },
+      { name: '24k Edible Gold Leaf', portion: '1 Flake', notes: 'Floating gold foil luxury finish' }
+    ],
     tastingNotes: ['Crisp Vanilla', 'Floral Honey', 'Clean Citrus Finish'],
     mixologistCommentary: 'The vibrant elderflower crispness elevates your focus on the mahogany rails, keeping your cue arm relaxed while developing smooth table control.',
     profiles: { smoke: 25, oak: 45, smoothness: 95, citrus: 80 },
-    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1000',
+    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200',
   },
-  'mahogany-regular': {
+  {
     id: 'mah-reg',
     name: 'The Break Shot Smoked Old Fashioned',
     subTitle: 'Hickory Infused Executive Classic',
-    category: 'Smoked Cocktail',
+    category: 'Smoked Classic',
     glassware: 'Double Old Fashioned Tumbler',
     price: 'R140',
     abv: '28% ABV',
-    description: 'Woodford Reserve Bourbon, Angostura & Orange Bitters, demerara sugar syrup, infused with hickory smoke inside a crystal decanter.',
-    ingredients: ['Woodford Reserve Bourbon', 'Angostura Bitters', 'Orange Zest', 'Hickory Smoke'],
+    woodMatch: 'mahogany',
+    skillMatch: 'regular',
+    description: 'Woodford Reserve Bourbon, Angostura & Orange Bitters, demerara sugar syrup, infused with hickory smoke inside a decanter.',
+    ingredients: [
+      { name: 'Woodford Reserve Bourbon', portion: '60ml', notes: 'Triple-distilled oak complexity' },
+      { name: 'Angostura & Orange Bitters', portion: '3 Dashes', notes: 'Aromatic clove and citrus zest' },
+      { name: 'Demerara Molasses Syrup', portion: '10ml', notes: 'Raw unrefined sugar velvetiness' },
+      { name: 'Hickory Wood Smoke Mist', portion: 'Decanted', notes: 'Cold-smoked tabletop presentation' }
+    ],
     tastingNotes: ['Hickory Smoke', 'Vanilla', 'Dark Cherry', 'Toasted Oak'],
     mixologistCommentary: 'Rich mahogany timber demands a drink with deep character. The hickory smoke lingers as smoothly as a clean cushion rebound.',
     profiles: { smoke: 85, oak: 90, smoothness: 80, citrus: 35 },
-    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1000',
+    imageUrl: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&q=80&w=1200',
   },
-  'mahogany-master': {
+  {
     id: 'mah-mas',
     name: 'Royal Mahogany Sazerac 1910',
     subTitle: 'Championship Barrel Strength',
@@ -74,225 +93,140 @@ const PAIRING_DATABASE: Record<string, CocktailPairing> = {
     glassware: 'Chilled Crystal Rocks Glass',
     price: 'R195',
     abv: '34% ABV',
+    woodMatch: 'mahogany',
+    skillMatch: 'master',
     description: 'Rittenhouse Rye, Hennessy VSOP Cognac, Absinthe rinse, Peychaud’s bitters, expressed lemon oil over hand-carved ice.',
-    ingredients: ['Rittenhouse Rye', 'Hennessy VSOP', 'Absinthe Mist', 'Peychaud’s Bitters'],
+    ingredients: [
+      { name: 'Rittenhouse 100-Proof Rye', portion: '35ml', notes: 'Peppery rye backbone' },
+      { name: 'Hennessy VSOP Cognac', portion: '25ml', notes: 'Velvety French oak fruitiness' },
+      { name: 'St. George Absinthe Rinse', portion: '5ml Mist', notes: 'Aniseed rim aromatic mist' },
+      { name: 'Peychaud’s Heritage Bitters', portion: '4 Dashes', notes: 'Floral gentian spice' }
+    ],
     tastingNotes: ['Anise Spice', 'Dry Rye', 'Candied Citrus', 'Heavy Oak'],
     mixologistCommentary: 'Crafted for players who calculate multi-cushion bank shots. High rye complexity mirrors the dense grain of polished mahogany.',
     profiles: { smoke: 40, oak: 95, smoothness: 70, citrus: 60 },
-    imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=1000',
+    imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=1200',
   },
-  'mahogany-highroller': {
-    id: 'mah-hr',
-    name: 'The Macallan 18 Double Cask & Cuban Sphere',
-    subTitle: 'VIP Executive Suite Selection',
-    category: 'Rare Single Malt',
-    glassware: 'Hand-Carved Crystal Sphere',
-    price: 'R380',
-    abv: '43% ABV',
-    description: 'Sherry-seasoned European and American oak cask whisky poured over a crystal ice sphere with dark chocolate truffles.',
-    ingredients: ['Macallan 18 Double Cask', 'Crystal Ice Sphere', '70% Valrhona Truffle'],
-    tastingNotes: ['Dried Fruit', 'Soft Spice', 'Toffee', 'Warm Mahogany Oak'],
-    mixologistCommentary: 'The ultimate luxury pour. Matches the warmth of polished mahogany in private VIP suites.',
-    profiles: { smoke: 30, oak: 100, smoothness: 98, citrus: 20 },
-    imageUrl: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&q=80&w=1000',
-  },
-
-  // Walnut Pairings
-  'walnut-novice': {
+  {
     id: 'wal-nov',
-    name: 'Emerald Velvet Spritz',
+    name: 'Emerald Velvet Botanical Spritz',
     subTitle: 'Botanical Velvet Refresh',
-    category: 'Lounge Spritz',
-    glassware: 'Oversized Goblet',
+    category: 'Botanical Spritz',
+    glassware: 'Oversized Crystal Goblet',
     price: 'R130',
     abv: '16% ABV',
-    description: 'Inverroche Amber Gin, Midori liqueur, prosecco, fresh cucumber ribbons, mint leaves, soda water.',
-    ingredients: ['Inverroche Amber Gin', 'Midori Liqueur', 'Prosecco', 'Mint & Cucumber'],
+    woodMatch: 'walnut',
+    skillMatch: 'novice',
+    description: 'Inverroche Amber Gin, Midori liqueur, prosecco, fresh cucumber ribbons, mint leaves, artisanal soda water.',
+    ingredients: [
+      { name: 'Inverroche Amber Fynbos Gin', portion: '45ml', notes: 'Coastal South African botanicals' },
+      { name: 'Midori Melon Liqueur', portion: '20ml', notes: 'Vibrant honeydew sweetness' },
+      { name: 'Valdobbiadene Prosecco', portion: '75ml', notes: 'Crisp dry effervescent bubbles' },
+      { name: 'Hand-Sliced Cucumber & Mint', portion: 'Garnish', notes: 'Garden fresh aromatic crunch' }
+    ],
     tastingNotes: ['Melon Zest', 'Cucumber Crisp', 'Effervescent Garden'],
     mixologistCommentary: 'Complements the deep earthy tone of walnut with light, crisp notes that ease first-time players into their rhythm.',
     profiles: { smoke: 10, oak: 20, smoothness: 90, citrus: 85 },
-    imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=1000',
+    imageUrl: 'https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&q=80&w=1200',
   },
-  'walnut-regular': {
-    id: 'wal-reg',
-    name: 'Walnut & Black Cherry Sour',
-    subTitle: 'Hand-Rubbed Bitters Blend',
-    category: 'Craft Sour',
-    glassware: 'Lowball Coupe',
-    price: 'R145',
-    abv: '24% ABV',
-    description: 'Maker’s Mark Bourbon, Nocello walnut liqueur, maraschino cherry reduction, lemon juice, egg white foam.',
-    ingredients: ['Maker’s Mark Bourbon', 'Nocello Walnut Liqueur', 'Fresh Lemon', 'Silky Foam'],
-    tastingNotes: ['Nutty Spice', 'Tart Cherry', 'Velvety Cream'],
-    mixologistCommentary: 'Nocello walnut liqueur mirrors the natural hand-rubbed grain of your table, offering balanced acidity for sustained tactical play.',
-    profiles: { smoke: 20, oak: 60, smoothness: 85, citrus: 75 },
-    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1000',
-  },
-  'walnut-master': {
-    id: 'wal-mas',
-    name: 'Dark Walnut Smoked Manhattan',
-    subTitle: 'Precision Cueist Reserve',
-    category: 'Barrel Aged',
-    glassware: 'Etched Vintage Coupe',
-    price: 'R175',
-    abv: '30% ABV',
-    description: 'Bulleit Rye, Antica Formula Vermouth, Black Walnut bitters, flamed orange peel, aged 30 days in charred oak.',
-    ingredients: ['Bulleit Rye', 'Antica Formula', 'Black Walnut Bitters', 'Flamed Orange'],
-    tastingNotes: ['Dark Cocoa', 'Charred Walnut', 'Rich Botanicals'],
-    mixologistCommentary: 'Deep walnut wood provides superior acoustic dampening; this aged Manhattan provides equal depth for master-level focus.',
-    profiles: { smoke: 65, oak: 85, smoothness: 88, citrus: 40 },
-    imageUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=1000',
-  },
-  'walnut-highroller': {
-    id: 'wal-hr',
-    name: 'Bain’s 15yr Single Grain Vintage',
-    subTitle: 'South African Heritage Masterpiece',
-    category: 'Fine South African Pour',
-    glassware: 'Glencairn Crystal Glass',
-    price: 'R210',
-    abv: '46% ABV',
-    description: 'Double cask 15-year South African single grain whisky with dark caramel drizzle and toasted walnut platter.',
-    ingredients: ["Bain's 15yr Grain Whisky", 'Artisanal Walnut Cluster'],
-    tastingNotes: ['Banana Spice', 'Toasted Oak', 'Caramelized Fig'],
-    mixologistCommentary: 'A local triumph matching the earthy luxury of South African dark walnut timber.',
-    profiles: { smoke: 35, oak: 90, smoothness: 92, citrus: 30 },
-    imageUrl: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&q=80&w=1000',
-  },
-
-  // Ebony Pairings
-  'ebony-novice': {
+  {
     id: 'ebo-nov',
     name: 'Obsidian Espresso Martini',
     subTitle: 'High-Gloss Energy Boost',
     category: 'Modern Digestif',
-    glassware: 'Chilled V-Shape Martini',
+    glassware: 'Chilled V-Shape Martini Glass',
     price: 'R135',
     abv: '19% ABV',
+    woodMatch: 'ebony',
+    skillMatch: 'novice',
     description: 'Belvedere Vodka, fresh Sandton espresso shot, Kahlúa, vanilla syrup, topped with 3 whole roasted coffee beans.',
-    ingredients: ['Belvedere Vodka', 'Fresh Espresso Shot', 'Kahlúa', 'Madagascar Vanilla'],
+    ingredients: [
+      { name: 'Belvedere Intense Vodka', portion: '50ml', notes: 'Quadruple-distilled rye purity' },
+      { name: 'Fresh Single-Origin Espresso', portion: '30ml', notes: 'Freshly pulled crema foam' },
+      { name: 'Kahlúa Coffee Liqueur', portion: '20ml', notes: 'Mexican arabica coffee sweetness' },
+      { name: 'Madagascar Vanilla Bean Syrup', portion: '10ml', notes: 'Warm floral aromatic balance' }
+    ],
     tastingNotes: ['Dark Roast', 'Creamy Crema', 'Bitter Cocoa'],
     mixologistCommentary: 'Piano ebony finish has zero room for distraction. The crisp caffeine kick sharpens cue alignment for developing players.',
     profiles: { smoke: 30, oak: 10, smoothness: 90, citrus: 10 },
-    imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=1000',
+    imageUrl: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&q=80&w=1200',
   },
-  'ebony-regular': {
+  {
     id: 'ebo-reg',
     name: 'Piano Black Truffle Negroni',
     subTitle: 'Monochrome Modern Complexity',
-    category: 'Artisanal Bitters',
-    glassware: 'Square Crystal Rocks',
+    category: 'Smoked Classic',
+    glassware: 'Square Cut Crystal Rocks',
     price: 'R160',
     abv: '26% ABV',
+    woodMatch: 'ebony',
+    skillMatch: 'regular',
     description: 'Tanqueray No. Ten Gin infused with white truffle oil, Campari, Sweet Vermouth, black activated charcoal ice cube.',
-    ingredients: ['Tanqueray No. 10', 'Truffle Oil Mist', 'Campari', 'Activated Charcoal Ice'],
+    ingredients: [
+      { name: 'Tanqueray No. Ten Gin', portion: '30ml', notes: 'Fresh whole citrus botanical gin' },
+      { name: 'White Truffle Infused Campari', portion: '30ml', notes: 'Piedmont truffle oil infusion' },
+      { name: 'Carpano Antica Formula Vermouth', portion: '30ml', notes: 'Rich dark vanilla herbal vermouth' },
+      { name: 'Activated Charcoal Ice Sphere', portion: '1 Cube', notes: 'High-contrast obsidian melt' }
+    ],
     tastingNotes: ['Earthy Truffle', 'Bitter Orange', 'Herbaceous Finish'],
     mixologistCommentary: 'Sleek, black activated-charcoal ice inside piano ebony aesthetics creates a visually striking table-side showpiece.',
     profiles: { smoke: 40, oak: 30, smoothness: 75, citrus: 70 },
-    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1000',
+    imageUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=1200',
   },
-  'ebony-master': {
-    id: 'ebo-mas',
-    name: 'The Midnight Break Boulevardier',
-    subTitle: 'Sharp Angle Championship Pour',
-    category: 'Aged Bitter Cocktail',
-    glassware: 'Heavy Crystal Tumbler',
-    price: 'R185',
-    abv: '32% ABV',
-    description: 'WhistlePig 10yr Rye, Campari, Punt e Mes vermouth, dark chocolate bitters, smoked rosemary sprig.',
-    ingredients: ['WhistlePig 10yr Rye', 'Campari', 'Punt e Mes', 'Smoked Rosemary'],
-    tastingNotes: ['Dark Cocoa', 'Herbal Bitters', 'Pine Smoke', 'Rich Spice'],
-    mixologistCommentary: 'For cueists who execute complex massé and jump shots under high-contrast lighting.',
-    profiles: { smoke: 70, oak: 80, smoothness: 82, citrus: 50 },
-    imageUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=1000',
-  },
-  'ebony-highroller': {
-    id: 'ebo-hr',
+  {
+    id: 'ros-hr',
     name: 'Dom Pérignon & Black Gold Caviar Spoon',
     subTitle: 'Ultra-Luxury VIP Pairing',
-    category: 'Champagne & Caviar',
-    glassware: 'Crystal Flute',
+    category: 'VIP Single Malt',
+    glassware: 'Crystal Champagne Flute',
     price: 'R650',
     abv: '12.5% ABV',
+    woodMatch: 'rosewood',
+    skillMatch: 'highroller',
     description: 'Chilled glass of Dom Pérignon Vintage Champagne paired with a mother-of-pearl spoon of Siberian Sturgeon caviar.',
-    ingredients: ['Dom Pérignon Vintage', 'Siberian Sturgeon Caviar'],
+    ingredients: [
+      { name: 'Dom Pérignon Vintage 2013', portion: '150ml', notes: 'Precision aged French champagne' },
+      { name: 'Siberian Sturgeon Caviar', portion: '15g Spoon', notes: 'Mother-of-pearl pearls' },
+      { name: 'Gold-Dust Brioche Toast', portion: '2 Points', notes: 'Toasted brioche crunch' }
+    ],
     tastingNotes: ['Brioche', 'Mineral Crispness', 'Saline Luxury'],
-    mixologistCommentary: 'Exclusive to Piano Ebony tables. High-contrast elegance for high-stakes championship nights.',
+    mixologistCommentary: 'Exclusive to Piano Ebony and African Rosewood tables. High-contrast elegance for high-stakes championship nights.',
     profiles: { smoke: 0, oak: 10, smoothness: 100, citrus: 90 },
-    imageUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=1000',
+    imageUrl: 'https://images.unsplash.com/photo-1560512823-829485b8bf24?auto=format&fit=crop&q=80&w=1200',
   },
-
-  // Rosewood Pairings
-  'rosewood-novice': {
-    id: 'ros-nov',
-    name: 'Rosewood Botanical Highball',
-    subTitle: 'Fragrant Heritage Tonic',
-    category: 'Craft Gin Tonic',
-    glassware: 'Balloon Copa Glass',
-    price: 'R125',
-    abv: '15% ABV',
-    description: 'Hendrick’s Gin, rose water mist, pink pepper corns, Fever-Tree Indian Tonic, fresh raspberry garnish.',
-    ingredients: ["Hendrick's Gin", 'Rose Water Mist', 'Pink Peppercorn', 'Raspberry'],
-    tastingNotes: ['Floral Rose', 'Crisp Cucumber', 'Gentle Spice'],
-    mixologistCommentary: 'Light rose floral notes echo the rich warm grain of African Rosewood rails, relaxing your alignment stance.',
-    profiles: { smoke: 0, oak: 20, smoothness: 95, citrus: 75 },
-    imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=1000',
-  },
-  'rosewood-regular': {
+  {
     id: 'ros-reg',
     name: 'Smoked Rosewood Old Fashioned',
     subTitle: 'Warm Timber Spice',
-    category: 'Signature Smoked',
+    category: 'Smoked Classic',
     glassware: 'Lowball Cut Glass',
     price: 'R150',
     abv: '27% ABV',
+    woodMatch: 'rosewood',
+    skillMatch: 'regular',
     description: 'Glenmorangie 10yr, cherrywood smoke, orange blossom water, cinnamon bark syrup, maraschino cherry.',
-    ingredients: ['Glenmorangie 10yr', 'Cherrywood Smoke', 'Cinnamon Syrup', 'Orange Blossom'],
+    ingredients: [
+      { name: 'Glenmorangie 10yr Single Malt', portion: '60ml', notes: 'Highland malt vanilla sweetness' },
+      { name: 'Cherrywood Smoke Infusion', portion: 'Mist', notes: 'Cold smoked timber aroma' },
+      { name: 'Cinnamon Bark Syrup', portion: '10ml', notes: 'Warm spice reduction' },
+      { name: 'Orange Blossom Water', portion: '2 Dashes', notes: 'Floral citrus spray' }
+    ],
     tastingNotes: ['Cherrywood Smoke', 'Warm Cinnamon', 'Honeyed Citrus'],
     mixologistCommentary: 'Cherrywood smoke pairs with brass-inlaid Rosewood rails, adding warm aromatic depth as you control speed cloth dynamics.',
     profiles: { smoke: 75, oak: 70, smoothness: 88, citrus: 55 },
-    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1000',
-  },
-  'rosewood-master': {
-    id: 'ros-mas',
-    name: 'The Brass Rosewood Penicillin',
-    subTitle: 'High-Proof Islay Infusion',
-    category: 'Islay Malt Cocktail',
-    glassware: 'Weighted Heavy Rocks Glass',
-    price: 'R180',
-    abv: '31% ABV',
-    description: 'Laphroaig 10yr Islay Malt float, Monkey Shoulder scotch, fresh ginger syrup, lemon, local Sandton honey.',
-    ingredients: ['Laphroaig 10yr Float', 'Monkey Shoulder', 'Fresh Ginger', 'Sandton Honey'],
-    tastingNotes: ['Heavy Peat', 'Fiery Ginger', 'Soothing Honey'],
-    mixologistCommentary: 'Peaty Islay smoke meets ginger spice. Designed for tournament strategists who need complete tactical composure.',
-    profiles: { smoke: 95, oak: 85, smoothness: 75, citrus: 65 },
-    imageUrl: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&q=80&w=1000',
-  },
-  'rosewood-highroller': {
-    id: 'ros-hr',
-    name: 'Meerlust Rubicon 2018 & Smoked Biltong Board',
-    subTitle: 'Stellenbosch Executive Pairing',
-    category: 'Fine SA Wine & Charcuterie',
-    glassware: 'Riedel Bordeaux Glass',
-    price: 'R620',
-    abv: '14.5% ABV',
-    description: 'Iconic Stellenbosch red blend paired with artisanal smoked kudu biltong, dried figs, and aged Gouda.',
-    ingredients: ['Meerlust Rubicon Cabernet Blend', 'Artisanal Kudu Biltong', 'Aged SA Gouda'],
-    tastingNotes: ['Blackcurrant', 'Cedar Wood', 'Graphite', 'Fine Tannins'],
-    mixologistCommentary: 'Cedar and blackcurrant notes mirror the natural warmth of African Rosewood, ideal for private lounge gatherings.',
-    profiles: { smoke: 40, oak: 95, smoothness: 90, citrus: 25 },
-    imageUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=1000',
-  },
-};
+    imageUrl: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=1200',
+  }
+];
 
 export const CraftCocktailPairing: React.FC<CraftCocktailPairingProps> = ({
-  activeWoodId,
-  activeFeltId,
-  shotCount,
-  pottedCount,
+  activeWoodId = 'mahogany',
+  activeFeltId = 'green',
+  shotCount = 0,
+  pottedCount = 0,
   onOrderPairing,
 }) => {
-  const [selectedSkillLevel, setSelectedSkillLevel] = useState<SkillLevelKey>('auto');
-  const [orderedSuccess, setOrderedSuccess] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [orderedDrinkId, setOrderedDrinkId] = useState<string | null>(null);
 
   // Auto-calculated Skill Level based on in-simulator gameplay statistics
   const calculatedSkill: Exclude<SkillLevelKey, 'auto'> = useMemo(() => {
@@ -303,297 +237,277 @@ export const CraftCocktailPairing: React.FC<CraftCocktailPairingProps> = ({
     return 'novice';
   }, [shotCount, pottedCount]);
 
-  // Effective skill level (user override or auto calculated)
-  const effectiveSkill: Exclude<SkillLevelKey, 'auto'> =
-    selectedSkillLevel === 'auto' ? calculatedSkill : selectedSkillLevel;
-
-  // Key lookup for cocktail database
-  const pairingKey = `${activeWoodId}-${effectiveSkill}`;
-  const currentPairing: CocktailPairing =
-    PAIRING_DATABASE[pairingKey] || PAIRING_DATABASE['mahogany-regular'];
-
-  // Handle ordering / saving pairing
-  const handleOrder = () => {
-    setOrderedSuccess(true);
-    if (onOrderPairing) {
-      onOrderPairing(currentPairing.name);
+  // Filter cocktails based on active timber match or category selection
+  const filteredCocktails = useMemo(() => {
+    if (selectedCategory === 'timber-recommended') {
+      return CRAFT_COCKTAILS.filter(
+        (c) => c.woodMatch === activeWoodId || c.woodMatch === 'all'
+      );
     }
-    setTimeout(() => setOrderedSuccess(false), 4000);
+    if (selectedCategory === 'all') return CRAFT_COCKTAILS;
+    return CRAFT_COCKTAILS.filter((c) => c.category === selectedCategory);
+  }, [selectedCategory, activeWoodId]);
+
+  const handleOrder = (drink: CocktailPairing) => {
+    setOrderedDrinkId(drink.id);
+    if (onOrderPairing) {
+      onOrderPairing(drink.name);
+    }
+    setTimeout(() => setOrderedDrinkId(null), 4000);
   };
 
   return (
-    <div className="bg-[#121212] border border-[#b29762]/30 p-6 sm:p-8 shadow-2xl relative overflow-hidden my-8">
-      {/* Background Decorative Element */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-[#b29762]/5 rounded-full blur-3xl pointer-events-none" />
+    <section id="craft-cocktails" className="py-20 bg-[#070707] border-t border-[#b29762]/30 relative overflow-hidden">
+      {/* Background Lighting Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#b29762]/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 space-y-6">
-        {/* Header Title Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-white/10 gap-4">
-          <div className="flex items-center space-x-3.5">
-            <div className="p-3 bg-[#0a0a0a] border border-[#b29762]/50 text-[#b29762] shadow-inner">
-              <GlassWater className="w-6 h-6" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
+        
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <div className="flex items-center justify-center space-x-3">
+            <div className="w-8 h-[1px] bg-[#b29762]" />
+            <div className="flex items-center space-x-1.5 text-[10px] uppercase tracking-[0.5em] text-[#b29762] font-bold">
+              <GlassWater className="w-3.5 h-3.5" />
+              <span>Sommelier & Mixologist Guide</span>
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-[9px] uppercase tracking-[0.35em] font-bold text-[#b29762]">
-                  Sommelier & Mixologist Guide
-                </span>
-                <span className="px-2 py-0.5 bg-[#b29762]/20 border border-[#b29762]/40 text-[#b29762] text-[8px] font-bold uppercase tracking-widest">
-                  Live Pairing Engine
-                </span>
-              </div>
-              <h3 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
-                Craft Cocktail Table Pairing
-              </h3>
-            </div>
+            <div className="w-8 h-[1px] bg-[#b29762]" />
           </div>
 
-          {/* Skill Level Selector Controls */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <span className="text-[10px] uppercase tracking-wider text-white/50 font-mono">
-              Simulator Skill Level:
-            </span>
-            <div className="inline-flex p-1 bg-[#0a0a0a] border border-white/15 rounded-none text-[10px] uppercase font-bold tracking-wider">
-              <button
-                type="button"
-                onClick={() => setSelectedSkillLevel('auto')}
-                className={`px-2.5 py-1 transition-colors ${
-                  selectedSkillLevel === 'auto'
-                    ? 'bg-[#b29762] text-black font-extrabold'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                Auto ({calculatedSkill.toUpperCase()})
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSkillLevel('novice')}
-                className={`px-2.5 py-1 transition-colors ${
-                  selectedSkillLevel === 'novice'
-                    ? 'bg-[#b29762] text-black font-extrabold'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                Novice
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSkillLevel('regular')}
-                className={`px-2.5 py-1 transition-colors ${
-                  selectedSkillLevel === 'regular'
-                    ? 'bg-[#b29762] text-black font-extrabold'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                Regular
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSkillLevel('master')}
-                className={`px-2.5 py-1 transition-colors ${
-                  selectedSkillLevel === 'master'
-                    ? 'bg-[#b29762] text-black font-extrabold'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                Master
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSkillLevel('highroller')}
-                className={`px-2.5 py-1 transition-colors ${
-                  selectedSkillLevel === 'highroller'
-                    ? 'bg-[#b29762] text-black font-extrabold'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                VIP High Roller
-              </button>
-            </div>
-          </div>
+          <h2 className="font-serif italic font-normal text-3xl sm:text-5xl text-white tracking-tight">
+            Craft Cocktail <span className="gold-foil-typography not-italic font-bold">Table Pairing</span>
+          </h2>
+
+          <p className="text-white/60 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+            Curated mixology engineered to match your billiard table's timber grain, speed felt dynamics, and player cue precision. Hover over any signature drink to reveal its ingredient profile in <span className="text-[#fcf6ba] font-semibold">gold-foil typography</span>.
+          </p>
         </div>
 
-        {/* Pairing Display Hero Card */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPairing.id}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.35 }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-[#0a0a0a] border border-[#b29762]/40 p-5 sm:p-7 relative shadow-xl"
-          >
-            {/* Left Image & Glassware Badge (4 Cols) */}
-            <div className="lg:col-span-5 relative group overflow-hidden border border-white/10 min-h-[260px] flex flex-col justify-between p-4">
-              <img
-                src={currentPairing.imageUrl}
-                alt={currentPairing.name}
-                className="absolute inset-0 w-full h-full object-cover filter brightness-90 contrast-110 group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        {/* Category Filters */}
+        <div className="flex flex-wrap items-center justify-center gap-2 bg-[#121212] p-3 border border-white/10 max-w-4xl mx-auto">
+          {[
+            { id: 'all', label: 'All Signature Pairings' },
+            { id: 'timber-recommended', label: `Matched to ${activeWoodId.toUpperCase()} Rails` },
+            { id: 'Craft Highball', label: 'Craft Highballs' },
+            { id: 'Smoked Classic', label: 'Smoked Old Fashioneds' },
+            { id: 'Heritage Reserve', label: 'Heritage Reserve Sazeracs' },
+            { id: 'Botanical Spritz', label: 'Botanical Spritzes' },
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                selectedCategory === cat.id
+                  ? 'bg-[#b29762] text-black border-[#b29762] shadow-lg'
+                  : 'bg-[#0a0a0a] text-white/60 border-white/10 hover:border-white/30 hover:text-white'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
 
-              {/* Glassware & Category Tags */}
-              <div className="relative z-10 flex items-center justify-between">
-                <span className="px-2.5 py-1 bg-black/80 backdrop-blur-md border border-[#b29762]/50 text-[#b29762] text-[9px] font-bold uppercase tracking-widest">
-                  {currentPairing.category}
-                </span>
-                <span className="px-2.5 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-white/80 text-[9px] font-mono">
-                  {currentPairing.abv}
-                </span>
-              </div>
+        {/* Visually Stunning Drink Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredCocktails.map((cocktail) => {
+            const isOrdered = orderedDrinkId === cocktail.id;
 
-              {/* Bottom Image Caption */}
-              <div className="relative z-10 space-y-1 pt-8">
-                <span className="text-[10px] text-[#b29762] font-mono uppercase tracking-wider block">
-                  Recommended Glassware: {currentPairing.glassware}
-                </span>
-                <span className="text-2xl font-bold font-serif italic text-white block drop-shadow-md">
-                  {currentPairing.price}
-                </span>
-              </div>
-            </div>
+            return (
+              <div
+                key={cocktail.id}
+                className="group relative bg-[#0f0f0f] border border-white/10 hover:border-[#b29762]/70 transition-all duration-500 overflow-hidden flex flex-col justify-between shadow-2xl rounded-xs min-h-[480px]"
+              >
+                {/* High-Definition Drink Image Container */}
+                <div className="relative h-64 sm:h-72 overflow-hidden bg-black">
+                  <img
+                    src={cocktail.imageUrl}
+                    alt={cocktail.name}
+                    className="w-full h-full object-cover filter brightness-90 contrast-105 group-hover:scale-110 transition-transform duration-700 ease-out"
+                  />
+                  {/* Subtle Vignette Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-black/30 to-black/40 pointer-events-none" />
 
-            {/* Right Details & Tasting Profile (7 Cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-between space-y-5">
-              <div className="space-y-3">
-                {/* Title */}
-                <div>
-                  <div className="flex items-center space-x-2 text-[10px] uppercase tracking-widest font-bold text-[#b29762] mb-1">
-                    <Sparkles className="w-3.5 h-3.5 text-[#b29762]" />
-                    <span>Curated for {activeWoodId.toUpperCase()} Rails & {effectiveSkill.toUpperCase()} Cueing</span>
-                  </div>
-                  <h4 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
-                    {currentPairing.name}
-                  </h4>
-                  <p className="text-xs text-[#b29762] font-mono tracking-wide mt-0.5">
-                    "{currentPairing.subTitle}"
-                  </p>
-                </div>
-
-                <p className="text-white/75 text-xs leading-relaxed">
-                  {currentPairing.description}
-                </p>
-
-                {/* Key Ingredients */}
-                <div className="pt-2">
-                  <span className="text-[9px] uppercase tracking-widest text-white/40 font-bold block mb-1.5">
-                    Key Ingredients & Infusions:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {currentPairing.ingredients.map((ing, i) => (
-                      <span
-                        key={i}
-                        className="px-2.5 py-1 bg-[#161616] border border-white/10 text-white/80 text-[10px] font-medium"
-                      >
-                        {ing}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Flavor Profile Metrics */}
-              <div className="bg-[#121212] p-3.5 border border-white/10 space-y-2.5">
-                <span className="text-[9px] uppercase tracking-widest text-[#b29762] font-bold flex items-center justify-between">
-                  <span>Mixology Tasting Metrics</span>
-                  <span className="text-white/40 font-mono">Balanced Profile</span>
-                </span>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[10px]">
-                  {/* Smoke Bar */}
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-white/60 text-[9px]">
-                      <span>Smoke</span>
-                      <span>{currentPairing.profiles.smoke}%</span>
-                    </div>
-                    <div className="h-1.5 bg-white/10 w-full overflow-hidden">
-                      <div
-                        className="h-full bg-orange-500 transition-all duration-500"
-                        style={{ width: `${currentPairing.profiles.smoke}%` }}
-                      />
-                    </div>
+                  {/* Glassware & Category Badges */}
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-none">
+                    <span className="px-3 py-1 bg-black/85 backdrop-blur-md border border-[#b29762]/60 text-[#b29762] text-[9px] font-bold uppercase tracking-widest shadow-md">
+                      {cocktail.category}
+                    </span>
+                    <span className="px-2.5 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-white/80 text-[9px] font-mono">
+                      {cocktail.abv}
+                    </span>
                   </div>
 
-                  {/* Oak Bar */}
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-white/60 text-[9px]">
-                      <span>Oak Wood</span>
-                      <span>{currentPairing.profiles.oak}%</span>
-                    </div>
-                    <div className="h-1.5 bg-white/10 w-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#b29762] transition-all duration-500"
-                        style={{ width: `${currentPairing.profiles.oak}%` }}
-                      />
-                    </div>
+                  {/* Hover Callout Tag */}
+                  <div className="absolute bottom-3 right-3 px-3 py-1 bg-black/90 backdrop-blur-md border border-[#b29762]/80 text-[#fcf6ba] text-[9px] font-mono font-bold uppercase tracking-widest flex items-center space-x-1.5 shadow-lg group-hover:opacity-0 transition-opacity z-10">
+                    <Sparkles className="w-3 h-3 text-[#b29762]" />
+                    <span>Hover for Gold Foil Profile</span>
                   </div>
 
-                  {/* Smoothness Bar */}
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-white/60 text-[9px]">
-                      <span>Smoothness</span>
-                      <span>{currentPairing.profiles.smoothness}%</span>
-                    </div>
-                    <div className="h-1.5 bg-white/10 w-full overflow-hidden">
-                      <div
-                        className="h-full bg-emerald-500 transition-all duration-500"
-                        style={{ width: `${currentPairing.profiles.smoothness}%` }}
-                      />
-                    </div>
+                  {/* Price Tag Overlay */}
+                  <div className="absolute bottom-3 left-4 text-2xl font-serif italic font-bold text-white drop-shadow-lg z-10 group-hover:opacity-0 transition-opacity">
+                    {cocktail.price}
                   </div>
 
-                  {/* Citrus Bar */}
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-white/60 text-[9px]">
-                      <span>Citrus / Zest</span>
-                      <span>{currentPairing.profiles.citrus}%</span>
+                  {/* HOVER ANIMATED OVERLAY REVEALING INGREDIENT PROFILE IN GOLD-FOIL TYPOGRAPHY */}
+                  <div className="absolute inset-0 bg-[#080808]/95 backdrop-blur-md p-5 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 overflow-y-auto no-scrollbar border-b border-[#b29762]/40">
+                    <div className="space-y-3">
+                      {/* Gold Foil Header */}
+                      <div className="flex items-center justify-between border-b border-[#b29762]/30 pb-2">
+                        <div className="flex items-center space-x-2">
+                          <Sparkle className="w-4 h-4 text-[#fcf6ba] animate-pulse" />
+                          <span className="gold-foil-typography font-serif text-sm font-bold tracking-wider uppercase">
+                            Ingredient Profile
+                          </span>
+                        </div>
+                        <span className="gold-foil-badge text-[8px] px-2 py-0.5 font-mono uppercase font-bold">
+                          24k Gold Infusion
+                        </span>
+                      </div>
+
+                      {/* Ingredient Profile List in Gold-Foil Typography */}
+                      <div className="space-y-2 pt-1">
+                        {cocktail.ingredients.map((ing, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-[#12100d] border border-[#b29762]/30 p-2 flex items-center justify-between shadow-inner"
+                          >
+                            <div className="space-y-0.5">
+                              <span className="gold-foil-typography font-serif text-xs font-semibold block leading-tight">
+                                {ing.name}
+                              </span>
+                              <span className="text-[9px] text-white/50 block font-mono">
+                                {ing.notes}
+                              </span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-[#b29762]/20 border border-[#b29762]/50 text-[#fcf6ba] text-[9px] font-mono font-bold whitespace-nowrap ml-2">
+                              {ing.portion}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Mixologist Commentary */}
+                      <div className="p-2.5 bg-[#171410] border-l-2 border-[#b29762] text-white/80 text-[10px] italic leading-relaxed">
+                        <span className="gold-foil-typography not-italic font-bold block text-[8px] uppercase tracking-widest mb-0.5">
+                          Mixologist Pairing Note:
+                        </span>
+                        "{cocktail.mixologistCommentary}"
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-white/10 w-full overflow-hidden">
-                      <div
-                        className="h-full bg-yellow-400 transition-all duration-500"
-                        style={{ width: `${currentPairing.profiles.citrus}%` }}
-                      />
+
+                    {/* Glassware Footer Note */}
+                    <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-white/50">
+                      <span>Glassware: {cocktail.glassware}</span>
+                      <span className="gold-foil-typography font-bold">{cocktail.price}</span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Mixologist Rationale Commentary */}
-              <div className="p-3 bg-[#171410] border-l-2 border-[#b29762] text-white/80 text-xs italic space-y-1">
-                <span className="text-[9px] uppercase tracking-widest text-[#b29762] font-bold not-italic block">
-                  Mixologist Commentary:
-                </span>
-                <p>"{currentPairing.mixologistCommentary}"</p>
-              </div>
+                {/* Card Body & Specs */}
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-[9px] uppercase tracking-widest font-bold text-[#b29762]">
+                      <Award className="w-3.5 h-3.5" />
+                      <span>Curated for {cocktail.woodMatch.toUpperCase()} Timber</span>
+                    </div>
 
-              {/* CTA Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={handleOrder}
-                  className="w-full sm:w-auto px-6 py-3 bg-[#b29762] text-black font-bold text-[11px] uppercase tracking-widest hover:bg-white transition-all shadow-lg flex items-center justify-center space-x-2"
-                >
-                  {orderedSuccess ? (
-                    <>
-                      <Check className="w-4 h-4 text-black" />
-                      <span>Pairing Added to Lounge Order!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Wine className="w-4 h-4" />
-                      <span>Order Pairing at Lounge Table</span>
-                    </>
-                  )}
-                </button>
+                    <h3 className="font-serif italic text-xl sm:text-2xl text-white font-normal group-hover:text-[#b29762] transition-colors">
+                      {cocktail.name}
+                    </h3>
 
-                <div className="text-[10px] text-white/40 font-mono text-center sm:text-right">
-                  Served in the Sandton Lounge & Private VIP Suites
+                    <p className="text-[#b29762] text-[11px] font-mono tracking-wide italic">
+                      "{cocktail.subTitle}"
+                    </p>
+
+                    <p className="text-white/70 text-xs leading-relaxed line-clamp-2">
+                      {cocktail.description}
+                    </p>
+                  </div>
+
+                  {/* Flavor Metrics Sliders */}
+                  <div className="bg-[#080808] p-3 border border-white/10 space-y-2">
+                    <span className="text-[8px] uppercase tracking-widest text-[#b29762] font-bold block">
+                      Tasting Profile Metrics
+                    </span>
+                    <div className="grid grid-cols-2 gap-2 text-[9px] font-mono">
+                      <div className="space-y-0.5">
+                        <div className="flex justify-between text-white/60">
+                          <span>Smoke</span>
+                          <span>{cocktail.profiles.smoke}%</span>
+                        </div>
+                        <div className="h-1 bg-white/10 w-full overflow-hidden">
+                          <div
+                            className="h-full bg-orange-500"
+                            style={{ width: `${cocktail.profiles.smoke}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-0.5">
+                        <div className="flex justify-between text-white/60">
+                          <span>Oak</span>
+                          <span>{cocktail.profiles.oak}%</span>
+                        </div>
+                        <div className="h-1 bg-white/10 w-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#b29762]"
+                            style={{ width: `${cocktail.profiles.oak}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-0.5">
+                        <div className="flex justify-between text-white/60">
+                          <span>Smoothness</span>
+                          <span>{cocktail.profiles.smoothness}%</span>
+                        </div>
+                        <div className="h-1 bg-white/10 w-full overflow-hidden">
+                          <div
+                            className="h-full bg-emerald-500"
+                            style={{ width: `${cocktail.profiles.smoothness}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-0.5">
+                        <div className="flex justify-between text-white/60">
+                          <span>Citrus</span>
+                          <span>{cocktail.profiles.citrus}%</span>
+                        </div>
+                        <div className="h-1 bg-white/10 w-full overflow-hidden">
+                          <div
+                            className="h-full bg-yellow-400"
+                            style={{ width: `${cocktail.profiles.citrus}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Order Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleOrder(cocktail)}
+                    className="w-full py-3 bg-[#b29762] text-black font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-lg flex items-center justify-center space-x-2"
+                  >
+                    {isOrdered ? (
+                      <>
+                        <Check className="w-4 h-4 text-black" />
+                        <span>Pairing Added to Lounge Order!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wine className="w-4 h-4" />
+                        <span>Order Pairing at Table ({cocktail.price})</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
