@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'motion/react';
-import { Sparkles, Layers, Sun, Shield, Eye, RefreshCw, ChevronRight, Award } from 'lucide-react';
+import { Sparkles, Layers, Sun, Shield, Eye, RefreshCw, ChevronRight, Award, Video } from 'lucide-react';
 
 interface Table3DVisualizationProps {
   onReserveClick?: () => void;
@@ -11,6 +11,8 @@ export const Table3DVisualization: React.FC<Table3DVisualizationProps> = ({ onRe
   const [activeFelt, setActiveFelt] = useState<'emerald' | 'blue' | 'burgundy' | 'charcoal'>('emerald');
   const [activeHotspot, setActiveHotspot] = useState<number | null>(1);
   const [isLightingOn, setIsLightingOn] = useState(true);
+  const [isCinematic, setIsCinematic] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Motion values for interactive 3D rotation based on mouse hover
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,10 +22,34 @@ export const Table3DVisualization: React.FC<Table3DVisualizationProps> = ({ onRe
   const rotateXRaw = useTransform(mouseY, [-200, 200], [15, -15]);
   const rotateYRaw = useTransform(mouseX, [-300, 300], [-25, 25]);
 
-  const rotateX = useSpring(rotateXRaw, { stiffness: 200, damping: 25 });
-  const rotateY = useSpring(rotateYRaw, { stiffness: 200, damping: 25 });
+  const rotateX = useSpring(rotateXRaw, { stiffness: 120, damping: 20 });
+  const rotateY = useSpring(rotateYRaw, { stiffness: 120, damping: 20 });
+
+  // Cinematic automatic orbit loop when user is idle or Cinematic Mode is toggled ON
+  useEffect(() => {
+    let animId: number;
+    const startTime = performance.now();
+
+    const orbitLoop = (now: number) => {
+      // Orbit runs if Cinematic mode is explicitly active OR if user is not hovering over table
+      if (isCinematic || !isHovered) {
+        const elapsed = (now - startTime) / 1000;
+        // Smooth 3D orbital movement across metallic finish & velvet surface
+        const targetX = Math.sin(elapsed * 0.75) * 220;
+        const targetY = Math.cos(elapsed * 0.45) * 110;
+
+        mouseX.set(targetX);
+        mouseY.set(targetY);
+      }
+      animId = requestAnimationFrame(orbitLoop);
+    };
+
+    animId = requestAnimationFrame(orbitLoop);
+    return () => cancelAnimationFrame(animId);
+  }, [isCinematic, isHovered, mouseX, mouseY]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsHovered(true);
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
@@ -33,8 +59,7 @@ export const Table3DVisualization: React.FC<Table3DVisualizationProps> = ({ onRe
   };
 
   const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
+    setIsHovered(false);
   };
 
   // Felt styling maps
@@ -134,6 +159,20 @@ export const Table3DVisualization: React.FC<Table3DVisualizationProps> = ({ onRe
 
         {/* View Mode & Lighting Toggle Controls */}
         <div className="flex flex-wrap items-center gap-3">
+          {/* Cinematic Orbit Camera Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsCinematic(!isCinematic)}
+            className={`px-4 py-2.5 text-[10px] uppercase font-bold tracking-widest flex items-center space-x-2 border transition-all ${
+              isCinematic
+                ? 'bg-[#b29762] text-black border-[#b29762] shadow-[0_0_15px_rgba(178,151,98,0.5)]'
+                : 'bg-[#141414] text-white/70 border-white/15 hover:border-[#b29762]'
+            }`}
+          >
+            <Video className="w-3.5 h-3.5" />
+            <span>{isCinematic ? 'Cinematic Orbit ACTIVE' : 'Cinematic Camera'}</span>
+          </button>
+
           {/* Exploded View Toggle */}
           <button
             type="button"
@@ -204,10 +243,19 @@ export const Table3DVisualization: React.FC<Table3DVisualizationProps> = ({ onRe
               )}
             </AnimatePresence>
 
-            {/* Instruction Tip Overlay */}
+            {/* Instruction Tip / Cinematic Indicator Overlay */}
             <div className="absolute top-4 left-4 z-20 flex items-center space-x-2 bg-[#0a0a0a]/80 backdrop-blur-md px-3 py-1.5 border border-white/10 text-[9px] uppercase tracking-widest text-white/50">
-              <Eye className="w-3 h-3 text-[#b29762]" />
-              <span>Interactive 3D Canvas • Move Mouse To Tilt</span>
+              {isCinematic ? (
+                <>
+                  <Video className="w-3 h-3 text-[#b29762] animate-pulse" />
+                  <span className="text-[#b29762] font-bold">Cinematic Showcase Orbit Active</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-3 h-3 text-[#b29762]" />
+                  <span>Interactive 3D Canvas • Auto-Orbits When Idle</span>
+                </>
+              )}
             </div>
 
             {/* 3D Rotating Table Assembly Card */}

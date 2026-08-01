@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FOOD_MENU } from '../data/billiardsData';
 import { MenuItem } from '../types';
-import { Flame, Sparkles } from 'lucide-react';
+import { Utensils, Flame, Sparkles, ChefHat, Check, Heart } from 'lucide-react';
+import { Card3DTilt } from './Card3DTilt';
 
 export const FoodSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -59,61 +60,62 @@ export const FoodSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Food Items Grid */}
+        {/* Food Items Grid with 3D Card Animation */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMenu.map((item) => (
-            <div
-              key={item.id}
-              className="group bg-[#121212] border border-white/10 hover:border-[#b29762]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-xl"
-            >
-              <div>
-                {/* Large Dish Photography */}
-                <div className="relative h-60 overflow-hidden">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30" />
+            <Card3DTilt key={item.id} maxRotation={10}>
+              <div
+                className="group bg-[#121212] border border-white/10 hover:border-[#b29762]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-xl h-full"
+              >
+                <div>
+                  {/* Large Dish Photography */}
+                  <div className="relative h-60 overflow-hidden">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30" />
 
-                  {item.isChefSpecial && (
-                    <div className="absolute top-4 left-4 px-3 py-1 bg-[#b29762] text-black text-[10px] font-bold uppercase tracking-widest shadow-lg flex items-center space-x-1">
-                      <Flame className="w-3 h-3" style={{ fill: 'black' }} />
-                      <span>Chef's Signature</span>
+                    {item.isChefSpecial && (
+                      <div className="absolute top-4 left-4 px-3 py-1 bg-[#b29762] text-black text-[10px] font-bold uppercase tracking-widest shadow-lg flex items-center space-x-1">
+                        <Flame className="w-3 h-3 fill-black" />
+                        <span>Chef's Signature</span>
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-4 right-4 px-3 py-1 bg-[#0a0a0a] border border-[#b29762] text-[#b29762] font-mono font-bold text-base shadow-lg">
+                      {item.price}
                     </div>
-                  )}
+                  </div>
 
-                  <div className="absolute bottom-4 right-4 px-3 py-1 bg-[#0a0a0a] border border-[#b29762] text-[#b29762] font-mono font-bold text-base shadow-lg">
-                    {item.price}
+                  {/* Content */}
+                  <div className="p-6 space-y-3">
+                    <h3 className="font-serif italic text-xl font-normal text-white group-hover:text-[#b29762] transition-colors">
+                      {item.name}
+                    </h3>
+
+                    <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
+                      {item.description}
+                    </p>
+
+                    {/* Sommelier & Beverage Pairing */}
+                    {item.pairing && (
+                      <div className="p-3 bg-[#0a0a0a] border border-white/10 text-[11px] text-[#b29762] font-medium flex items-center space-x-2">
+                        <Sparkles className="w-3.5 h-3.5 text-[#b29762] shrink-0" />
+                        <span className="truncate">{item.pairing}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 space-y-3">
-                  <h3 className="font-serif italic text-xl font-normal text-white group-hover:text-[#b29762] transition-colors">
-                    {item.name}
-                  </h3>
-
-                  <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
-                    {item.description}
-                  </p>
-
-                  {/* Sommelier & Beverage Pairing */}
-                  {item.pairing && (
-                    <div className="p-3 bg-[#0a0a0a] border border-white/10 text-[11px] text-[#b29762] font-medium flex items-center space-x-2">
-                      <Sparkles className="w-3.5 h-3.5 text-[#b29762] shrink-0" />
-                      <span className="truncate">{item.pairing}</span>
-                    </div>
-                  )}
+                {/* Card Footer Tag */}
+                <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-white/40 border-t border-white/10 mt-4 pt-4">
+                  <span className="capitalize text-[#b29762] font-medium text-[11px] uppercase tracking-wider">{item.category}</span>
+                  <span className="text-[10px] uppercase tracking-wider">Freshly Prepared</span>
                 </div>
               </div>
-
-              {/* Card Footer Tag */}
-              <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-white/40 border-t border-white/10 mt-4 pt-4">
-                <span className="capitalize text-[#b29762] font-medium text-[11px] uppercase tracking-wider">{item.category}</span>
-                <span className="text-[10px] uppercase tracking-wider">Freshly Prepared</span>
-              </div>
-            </div>
+            </Card3DTilt>
           ))}
         </div>
       </div>

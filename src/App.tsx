@@ -11,11 +11,14 @@ import { GallerySection } from './components/GallerySection';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { FaqSection } from './components/FaqSection';
 import { VipClubSection } from './components/VipClubSection';
+import { DigitalGuestbook } from './components/DigitalGuestbook';
 import { LocationSection } from './components/LocationSection';
 import { Footer } from './components/Footer';
 import { BookingModal } from './components/BookingModal';
 import { QuickCallFloat } from './components/QuickCallFloat';
 import { LuxuryCursor } from './components/LuxuryCursor';
+import { GoldThreadProgressBar } from './components/GoldThreadProgressBar';
+import { ProTipToast } from './components/ProTipToast';
 
 export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -33,6 +36,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col font-sans selection:bg-[#b29762] selection:text-black">
+      {/* Editorial Metallic Gold Scroll Progress Bar */}
+      <GoldThreadProgressBar />
+
       {/* Luxury Custom Cursor */}
       <LuxuryCursor />
 
@@ -51,6 +57,7 @@ export default function App() {
         <GallerySection />
         <TestimonialsSection />
         <VipClubSection />
+        <DigitalGuestbook />
         <FaqSection />
         <LocationSection />
       </main>
@@ -67,6 +74,9 @@ export default function App() {
         onClose={handleCloseBooking}
         preSelectedTableId={selectedTableForBooking}
       />
+
+      {/* Billiard Mastery Pro Tip Toast System */}
+      <ProTipToast />
     </div>
   );
 }

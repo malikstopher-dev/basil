@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, MapPin, CheckCircle2, Phone } from 'lucide-react';
+import { Award, ShieldCheck, MapPin, Sparkles, CheckCircle2, Phone } from 'lucide-react';
 import { VENUE_INFO } from '../data/billiardsData';
 
 interface AboutProps {
@@ -15,9 +15,8 @@ export const AboutSection: React.FC<AboutProps> = ({ onOpenBooking }) => {
           <div className="lg:col-span-6 relative">
             <div className="relative z-10 border border-[#b29762]/30 bg-[#121212] overflow-hidden shadow-2xl">
               <img
-                src="/images/hero5.jpg"
+                src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=1200"
                 alt="Basil's Billiards Supplier Lounge Area"
-                loading="lazy"
                 className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700 opacity-90"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />

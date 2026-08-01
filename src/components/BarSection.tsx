@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { DRINK_MENU } from '../data/billiardsData';
+import { GlassWater, Sparkles, Award, Wine, Flame, ChevronRight } from 'lucide-react';
+import { Card3DTilt } from './Card3DTilt';
+
 export const BarSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'cocktails' | 'whisky' | 'beer' | 'wine'>('all');
 
@@ -52,59 +55,60 @@ export const BarSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Drink Grid */}
+        {/* Drink Grid with 3D Card Animation */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredDrinks.map((drink) => (
-            <div
-              key={drink.id}
-              className="group bg-[#121212] border border-white/10 hover:border-[#b29762]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-xl"
-            >
-              <div>
-                <div className="relative h-56 overflow-hidden">
-                  <img
-                    src={drink.imageUrl}
-                    alt={drink.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30" />
+            <Card3DTilt key={drink.id} maxRotation={10}>
+              <div
+                className="group bg-[#121212] border border-white/10 hover:border-[#b29762]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-xl h-full"
+              >
+                <div>
+                  <div className="relative h-56 overflow-hidden">
+                    <img
+                      src={drink.imageUrl}
+                      alt={drink.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30" />
 
-                  {drink.isPopular && (
-                    <div className="absolute top-4 left-4 px-3 py-1 bg-[#b29762] text-black text-[10px] font-bold uppercase tracking-widest shadow-lg">
-                      House Favorite
+                    {drink.isPopular && (
+                      <div className="absolute top-4 left-4 px-3 py-1 bg-[#b29762] text-black text-[10px] font-bold uppercase tracking-widest shadow-lg">
+                        House Favorite
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-4 right-4 px-3 py-1 bg-[#0a0a0a] border border-[#b29762] text-[#b29762] font-mono font-bold text-base shadow-lg">
+                      {drink.price}
                     </div>
-                  )}
+                  </div>
 
-                  <div className="absolute bottom-4 right-4 px-3 py-1 bg-[#0a0a0a] border border-[#b29762] text-[#b29762] font-mono font-bold text-base shadow-lg">
-                    {drink.price}
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-serif italic text-xl font-normal text-white group-hover:text-[#b29762] transition-colors">
+                        {drink.name}
+                      </h3>
+                    </div>
+
+                    <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
+                      {drink.description}
+                    </p>
+
+                    {/* Tasting notes */}
+                    {drink.tastingNotes && (
+                      <div className="p-3 bg-[#0a0a0a] border border-white/10 text-[11px] space-y-1">
+                        <span className="text-white/40 block font-bold text-[9px] uppercase tracking-wider">Tasting Profile</span>
+                        <span className="text-[#b29762] font-medium">{drink.tastingNotes}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="p-6 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-serif italic text-xl font-normal text-white group-hover:text-[#b29762] transition-colors">
-                      {drink.name}
-                    </h3>
-                  </div>
-
-                  <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
-                    {drink.description}
-                  </p>
-
-                  {/* Tasting notes */}
-                  {drink.tastingNotes && (
-                    <div className="p-3 bg-[#0a0a0a] border border-white/10 text-[11px] space-y-1">
-                      <span className="text-white/40 block font-bold text-[9px] uppercase tracking-wider">Tasting Profile</span>
-                      <span className="text-[#b29762] font-medium">{drink.tastingNotes}</span>
-                    </div>
-                  )}
+                <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-white/40 border-t border-white/10 mt-3 pt-3">
+                  <span className="text-[#b29762] font-medium text-[11px] uppercase tracking-wider">{drink.origin}</span>
+                  {drink.abv && <span className="text-white/40 text-[10px] uppercase tracking-wider">{drink.abv}</span>}
                 </div>
               </div>
-
-              <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-white/40 border-t border-white/10 mt-3 pt-3">
-                <span className="text-[#b29762] font-medium text-[11px] uppercase tracking-wider">{drink.origin}</span>
-                {drink.abv && <span className="text-white/40 text-[10px] uppercase tracking-wider">{drink.abv}</span>}
-              </div>
-            </div>
+            </Card3DTilt>
           ))}
         </div>
       </div>

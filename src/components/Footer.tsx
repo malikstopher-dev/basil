@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { VENUE_INFO } from '../data/billiardsData';
-import { Phone, MapPin, Mail, Clock, ArrowUp } from 'lucide-react';
+import { Phone, MapPin, Mail, Award, Clock, ArrowUp, Heart, Sparkles } from 'lucide-react';
+import { BasilLogo } from './BasilLogo';
 
 interface FooterProps {
   onOpenBooking: () => void;
@@ -65,9 +66,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenBooking }) => {
           {/* Brand Info */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 border border-[#b29762] bg-[#0a0a0a] flex items-center justify-center">
-                <span className="font-serif italic text-base text-[#b29762] font-bold">BSS</span>
-              </div>
+              <BasilLogo size={48} />
               <div>
                 <h3 className="text-xs uppercase tracking-[0.2em] font-bold text-white">BASIL'S BILLIARDS</h3>
                 <span className="text-[9px] tracking-[0.3em] text-[#b29762] uppercase block font-medium">SUPPLIER & LOUNGE</span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FAQS } from '../data/billiardsData';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, HelpCircle, Sparkles } from 'lucide-react';
 
 export const FaqSection: React.FC = () => {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
@@ -53,7 +53,7 @@ export const FaqSection: React.FC = () => {
               </button>
 
               {openIdx === idx && (
-                <div className="px-6 pb-6 text-white/70 text-xs sm:text-sm leading-relaxed border-t border-white/10 pt-4 duration-200" style={{ animation: 'fadeIn 0.2s ease-out' }}>
+                <div className="px-6 pb-6 text-white/70 text-xs sm:text-sm leading-relaxed border-t border-white/10 pt-4 animate-in fade-in duration-200">
                   {faq.answer}
                 </div>
               )}

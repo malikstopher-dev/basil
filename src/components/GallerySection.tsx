@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GALLERY_IMAGES } from '../data/billiardsData';
 import { GalleryItem } from '../types';
-import { Maximize2, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sparkles, Maximize2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const GallerySection: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');

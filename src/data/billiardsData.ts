@@ -41,8 +41,18 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Dedicated Chesterfield Lounge Seating",
       "Perimeter Beverage Rail & Cigar Tray"
     ],
-    imageUrl: "/images/hero3.jpg",
-    badge: "Tournament Choice"
+    imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=1200",
+    badge: "Tournament Choice",
+    stats: {
+      slateThickness: "50mm Italian Honed Slate (3-Piece)",
+      clothGrade: "Hainsworth Match Worsted (95% Pure Wool)",
+      cushionBounceRating: "9.9 / 10 (Northern Rubber K66 Tournament Cushion)",
+      clothVelocityRating: "28.4 km/h High-Speed Worsted Roll",
+      levelingPrecision: "±0.01mm Micro-Metric Calibrated Sub-Chassis",
+      pocketSpecs: "Drop Pocket 118mm Corner Mouth (WPA Sanctioned)",
+      tableDimensions: "9ft x 4.5ft (Standard Championship Field)",
+      chassisFrame: "Solid African Mahogany Frame with Steel Support Ribs"
+    }
   },
   {
     id: "table-vip-suite",
@@ -62,14 +72,24 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Complimentary Welcome Single Malt Pour",
       "Plush Chesterfield Lounge Furniture"
     ],
-    imageUrl: "/images/vip.jpg",
-    badge: "Exclusive VIP"
+    imageUrl: "https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=1200",
+    badge: "Exclusive VIP",
+    stats: {
+      slateThickness: "60mm Brazilian Diamond-Honed Slate (5-Piece)",
+      clothGrade: "Strachan 6811 Gold Tournament Velvet (100% Wool)",
+      cushionBounceRating: "10.0 / 10 (Match Grade K55 Premium Rubber)",
+      clothVelocityRating: "29.1 km/h Ultra-Smooth Velvet Nap Glide",
+      levelingPrecision: "±0.005mm Laser Leveling with Hydraulic Adjustment",
+      pocketSpecs: "Hand-Stitched Leather Buckets & Polished Brass Mouths",
+      tableDimensions: "10ft x 5ft (Executive Dual Snooker & Pool Field)",
+      chassisFrame: "Hand-Carved Solid Oak Structure with Brass Rail Support"
+    }
   },
   {
     id: "table-english-8ball",
     name: "The Boma Heritage English 8-Ball",
     category: "english",
-    description: "Authentic 7ft English Pool Table crafted from solid African Rosewood with high-speed directional directional cloth. Ideal for tactical matches and spirited friendly duels.",
+    description: "Authentic 7ft English Pool Table crafted from solid African Rosewood with high-speed directional cloth. Ideal for tactical matches and spirited friendly duels.",
     clothColor: "Deep Emerald Green",
     slateThickness: "38mm Precision Slate",
     lighting: "Warm Vintage Brass Pendant Canopy",
@@ -81,8 +101,18 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Adjacent High-Top Leather Dining Table",
       "Direct Bar Service Access"
     ],
-    imageUrl: "/images/hero6.jpg",
-    badge: "Most Popular"
+    imageUrl: "https://images.unsplash.com/photo-1615826932727-ed9f182ac67e?auto=format&fit=crop&q=80&w=1200",
+    badge: "Most Popular",
+    stats: {
+      slateThickness: "38mm Precision Monolithic Slate (1-Piece)",
+      clothGrade: "Hainsworth Smart Directional Napped Wool",
+      cushionBounceRating: "9.7 / 10 (English Tournament L-Shaped Cushion)",
+      clothVelocityRating: "26.2 km/h Tactical Precision Control Roll",
+      levelingPrecision: "±0.02mm Precision Screw Leveling Feet",
+      pocketSpecs: "English Standard 2\" Ball Mouth with Chrome Corner Plates",
+      tableDimensions: "7ft x 3.5ft (Authentic English 8-Ball Playing Field)",
+      chassisFrame: "Solid African Rosewood Box Chassis with Corner Brass Inlays"
+    }
   },
   {
     id: "table-patio-lounge",
@@ -100,8 +130,18 @@ export const BILLIARD_TABLES: BilliardTable[] = [
       "Surround Lounge Music System",
       "Fireside Seating Nearby"
     ],
-    imageUrl: "/images/hero1.jpg",
-    badge: "Al Fresco Vibe"
+    imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=1200",
+    badge: "Al Fresco Vibe",
+    stats: {
+      slateThickness: "42mm Weather-Shield Sealed Italian Slate",
+      clothGrade: "Simonis 860 High-Durability All-Weather Worsted",
+      cushionBounceRating: "9.6 / 10 (UV & Humidity Sealed K66 Rubber)",
+      clothVelocityRating: "27.0 km/h Al Fresco Balanced Speed",
+      levelingPrecision: "±0.02mm Heavy-Duty Outdoor Adjustable Footings",
+      pocketSpecs: "Weatherproof Synthetic Leather Drop Buckets",
+      tableDimensions: "8ft x 4ft (Outdoor Terrace Lounge Field)",
+      chassisFrame: "Teak Hardwood Frame with Marine-Grade Stainless Steel Joints"
+    }
   }
 ];
 
@@ -255,7 +295,7 @@ export const EVENTS: TournamentEvent[] = [
     prizePool: "R10,000 Guaranteed Cash + Trophy",
     entryFee: "R150 Entry",
     description: "Sandton's most prestigious weekly pool showdown. Double elimination format, professional referees, 8-Ball rules. Streamed live on venue screens.",
-    imageUrl: "/images/hero7.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=1000",
     isWeekly: true
   },
   {
@@ -265,7 +305,7 @@ export const EVENTS: TournamentEvent[] = [
     date: "Available Mon – Wed",
     time: "Tailored Hours",
     description: "Host your company team building, product launches, or client entertaining. Private venue hire, custom gourmet platters, whisky masterclasses & dedicated host.",
-    imageUrl: "/images/hero5.jpg"
+    imageUrl: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=1000"
   },
   {
     id: "event-ladies-night",
@@ -274,7 +314,7 @@ export const EVENTS: TournamentEvent[] = [
     date: "Every Tuesday Night",
     time: "18:30 – 23:00 SAST",
     description: "Complimentary signature cocktails on arrival for ladies, half-price table rates all evening, and live saxophone lounge sets.",
-    imageUrl: "/images/vip.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&q=80&w=1000",
     isWeekly: true
   }
 ];
@@ -317,42 +357,42 @@ export const GALLERY_IMAGES: GalleryItem[] = [
     id: "gal-1",
     title: "Main Tournament Arena",
     category: "tables",
-    imageUrl: "/images/hero2.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=1200",
     caption: "Custom 9ft Slate Tables under shadowless LED canopies at BSS Paulshof."
   },
   {
     id: "gal-2",
     title: "The Boma Executive Lounge",
     category: "lounge",
-    imageUrl: "/images/vip.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=1200",
     caption: "Plush emerald velvet Chesterfield sofas and rare whisky display inside The Boma Café."
   },
   {
     id: "gal-3",
     title: "Flame-Grilled Tomahawk Steak",
     category: "food",
-    imageUrl: "/images/hero5.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&q=80&w=1200",
     caption: "35-Day dry-aged beef prepared by our executive chefs."
   },
   {
     id: "gal-4",
     title: "Smoked Old Fashioned",
     category: "cocktails",
-    imageUrl: "/images/hero6.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200",
     caption: "Hickory smoke poured over handcrafted ice spheres."
   },
   {
     id: "gal-5",
     title: "Thursday Tournament Thrills",
     category: "events",
-    imageUrl: "/images/hero7.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1615826932727-ed9f182ac67e?auto=format&fit=crop&q=80&w=1200",
     caption: "King of Pool final frame action with live audience."
   },
   {
     id: "gal-6",
     title: "Outdoor Heated Patio",
     category: "lounge",
-    imageUrl: "/images/hero1.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=1200",
     caption: "Fireside drinks and outdoor pool under fairy lights."
   }
 ];

@@ -35,6 +35,16 @@
   background: #b29762;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Editorial glass & panel utilities */
 .glass-panel {
   background: rgba(18, 18, 18, 0.85);
@@ -78,21 +88,5 @@
 /* Font styles */
 .font-serif-display {
   font-family: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
-}
-
-/* Keyframe animations (replacing TailwindCSS v3 animate-in plugin) */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes zoomIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
 }
 

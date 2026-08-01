@@ -1,3 +1,14 @@
+export interface TableStats {
+  slateThickness: string;
+  clothGrade: string;
+  cushionBounceRating: string;
+  clothVelocityRating: string;
+  levelingPrecision: string;
+  pocketSpecs: string;
+  tableDimensions: string;
+  chassisFrame: string;
+}
+
 export interface BilliardTable {
   id: string;
   name: string;
@@ -12,6 +23,7 @@ export interface BilliardTable {
   features: string[];
   imageUrl: string;
   badge?: string;
+  stats?: TableStats;
 }
 
 export interface MenuItem {
