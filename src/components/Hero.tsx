@@ -3,13 +3,24 @@ import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 import { Calendar, Volume2, VolumeX, ChevronDown, Crown, Sparkles, Trophy, ShieldCheck } from 'lucide-react';
 import { BasilLogo } from './BasilLogo';
 
+import heroLobbyVideo from '../../site assets/videos/hero-lobby.mp4';
+import heroAmbientVideo from '../../site assets/videos/hero-ambient.mp4';
+import heroTablesVideo from '../../site assets/videos/hero-tables.mp4';
+import heroExteriorVideo from '../../site assets/videos/hero-exterior.mp4';
+import posterLobby from '../../site assets/images/poster-lobby.jpg';
+import posterTables from '../../site assets/images/poster-tables.jpg';
+
 interface HeroProps {
   onOpenBooking: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({ onOpenBooking }) => {
   const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement[]>([]);
+
+  const setVideoRef = (index: number) => (el: HTMLVideoElement | null) => {
+    if (el) videoRef.current[index] = el;
+  };
 
   // Scroll Parallax Hooks
   const { scrollY } = useScroll();
@@ -50,34 +61,48 @@ export const Hero: React.FC<HeroProps> = ({ onOpenBooking }) => {
   );
 
   const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
+    videoRef.current.forEach((video) => {
+      if (video) video.muted = isMuted;
+    });
+    setIsMuted(!isMuted);
   };
 
   return (
     <section className="relative h-screen w-full flex flex-col justify-between overflow-hidden bg-[#0a0a0a] select-none [perspective:1200px]">
       {/* --- LAYER 0: Full-Bleed Video Background with Dynamic Depth-of-Field Blur --- */}
       <div className="absolute inset-0 z-0">
+        {/* Desktop Hero Video (md+) - Lobby primary, Ambient fallback */}
         <motion.video
-          ref={videoRef}
+          ref={setVideoRef(0)}
           autoPlay
           loop
           muted={isMuted}
           playsInline
-          poster="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=2000"
+          disablePictureInPicture
+          preload="auto"
+          poster={posterLobby}
           style={{ filter: videoFilter }}
-          className="w-full h-full object-cover scale-105"
+          className="w-full h-full object-cover scale-105 hidden md:block"
         >
-          <source
-            src="https://cdn.coverr.co/videos/coverr-playing-billiards-in-a-bar-4217/1080p.mp4"
-            type="video/mp4"
-          />
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-billiards-player-hitting-a-ball-41584-large.mp4"
-            type="video/mp4"
-          />
+          <source src={heroLobbyVideo} type="video/mp4" />
+          <source src={heroAmbientVideo} type="video/mp4" />
+        </motion.video>
+
+        {/* Mobile Hero Video (<md) - Tables primary, Exterior fallback */}
+        <motion.video
+          ref={setVideoRef(1)}
+          autoPlay
+          loop
+          muted={isMuted}
+          playsInline
+          disablePictureInPicture
+          preload="auto"
+          poster={posterTables}
+          style={{ filter: videoFilter }}
+          className="w-full h-full object-cover scale-105 md:hidden"
+        >
+          <source src={heroTablesVideo} type="video/mp4" />
+          <source src={heroExteriorVideo} type="video/mp4" />
         </motion.video>
 
         {/* Multi-layered luxury gradient overlays & scroll-triggered darkening intensity */}
