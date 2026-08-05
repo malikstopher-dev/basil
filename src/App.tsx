@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { AboutSection } from './components/AboutSection';
 import { WhyChooseUs } from './components/WhyChooseUs';
+import { ServicesSection } from './components/ServicesSection';
 import { TableShowcase } from './components/TableShowcase';
 import { FoodSection } from './components/FoodSection';
 import { BarSection } from './components/BarSection';
@@ -50,6 +51,7 @@ export default function App() {
         <Hero onOpenBooking={() => handleOpenBooking()} />
         <AboutSection onOpenBooking={() => handleOpenBooking()} />
         <WhyChooseUs />
+        <ServicesSection />
         <TableShowcase onSelectTableForBooking={(tableId) => handleOpenBooking(tableId)} />
         <FoodSection />
         <BarSection />
